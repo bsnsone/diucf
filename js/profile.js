@@ -15,7 +15,15 @@ function fetchProfile() {
     .then(data => {
       const user = data.result[0];
 
-      document.getElementById('avatar').src = user.avatar;
+      // Attempt to get a higher-resolution avatar by modifying the URL
+      let avatarUrl = user.avatar;
+      if (avatarUrl && avatarUrl.includes('/50/')) {
+        avatarUrl = avatarUrl.replace('/50/', '/200/');
+      } else if (user.titlePhoto) {
+        avatarUrl = user.titlePhoto;
+      }
+      document.getElementById('avatar').src = avatarUrl || 'https://via.placeholder.com/200';
+
       document.getElementById('handle-value').textContent = user.handle;
       document.getElementById('rating-value').textContent = user.rating ?? 'N/A';
       const location = [user.city, user.country].filter(Boolean).join(', ') || 'N/A';
