@@ -88,9 +88,6 @@ function fetchProfile() {
         handleElem.classList.add(`rank-color-${currentRank}`);
         rankElem.classList.add(`rank-color-${currentRank}`);
         ratingElem.classList.add(`rank-color-${currentRank}`);
-        locationElem.classList.add(`rank-color-${currentRank}`);
-        organizationElem.classList.add(`rank-color-${currentRank}`);
-        friendCountElem.classList.add(`rank-color-${currentRank}`);
         maxRatingElem.classList.add(`rank-color-${maxRank || currentRank}`);
         rankNameElem.classList.add(`rank-color-${maxRank || currentRank}`);
       } else {
