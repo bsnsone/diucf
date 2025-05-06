@@ -72,38 +72,25 @@ body {
 }
 
 .card .right .rank {
-  font-weight: bold;
   font-size: 18px;
   margin-bottom: 10px;
 }
 
-/* Make rating and rank-name bold when they have a rank class */
-p.newbie, p.pupil, p.specialist, p.expert, p.candidate-master,
-p.master, p.international-master, p.grandmaster,
-p.international-grandmaster, p.legendary-grandmaster {
+/* Make handle-value, rating-value, rank-value, and rank-name-value bold when they have a rank class */
+span.newbie, span.pupil, span.specialist, span.expert, span.candidate-master,
+span.master, span.international-master, span.grandmaster,
+span.international-grandmaster, span.legendary-grandmaster {
   font-weight: bold;
 }
 
 /* Rank colors */
-.rank.newbie { color: #999999; } /* darker gray */
-.rank.pupil { color: #16b316; } /* dark green */
-.rank.specialist { color: #00ffaa; } /* darker cyan-green */
-.rank.expert { color: #0000ff; } /* darker blue */
-.rank.candidate-master { color: #b925b9; } /* darker purple */
-.rank.master { color: #ffab03; } /* darker orange */
-.rank.international-master { color: #ff9900; } /* darker red-orange */
-.rank.grandmaster { color: #CC2222; } /* darker red */
-.rank.international-grandmaster { color: #CC0000; } /* darker deep red */
-.rank.legendary-grandmaster { color: #880000; } /* darker dark red */
-
-/* Color for text rank name */
-.newbie { color: #999999; }
-.pupil { color: #16b316; }
-.specialist { color: #00ffaa; }
-.expert { color: #0000ff; }
-.candidate-master { color: #b925b9; }
-.master { color: #ffab03; }
-.international-master { color: #ff9900; }
-.grandmaster { color: #CC2222; }
-.international-grandmaster { color: #CC0000; }
-.legendary-grandmaster { color: #880000; }
+.newbie { color: #999999; } /* darker gray */
+.pupil { color: #16b316; } /* dark green */
+.specialist { color: #00ffaa; } /* darker cyan-green */
+.expert { color: #0000ff; } /* darker blue */
+.candidate-master { color: #b925b9; } /* darker purple */
+.master { color: #ffab03; } /* darker orange */
+.international-master { color: #ff9900; } /* darker red-orange */
+.grandmaster { color: #CC2222; } /* darker red */
+.international-grandmaster { color: #CC0000; } /* darker deep red */
+.legendary-grandmaster { color: #880000; } /* darker dark red */
