@@ -1,146 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Codeforces Profile Viewer</title>
+  <meta charset="UTF-8">
+  <title>Codeforces Profile Card</title>
   <link rel="icon" href="https://imransihab0.github.io/amar_ami/is.png" type="image/png" sizes="32x32">
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f4;
-      padding: 40px;
-      text-align: center;
-    }
-
-    input {
-      padding: 10px;
-      font-size: 16px;
-      width: 250px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-bottom: 20px;
-    }
-
-    .card {
-      background-color: white;
-      border: 2px solid #ccc;
-      border-radius: 12px;
-      display: flex;
-      width: 600px;
-      margin: 0 auto;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-      text-align: left;
-      padding: 20px;
-    }
-
-    .left {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .left img {
-      width: 120px;
-      height: 120px;
-      border-radius: 10px;
-      border: 1px solid #aaa;
-    }
-
-    .right {
-      flex: 2;
-      padding-left: 20px;
-    }
-
-    .info {
-      margin: 6px 0;
-      font-size: 1.05rem;
-    }
-
-    .label {
-      font-weight: bold;
-    }
-
-    .rank-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-
-    /* Rank-based text colors only */
-    .newbie { color: #808080; }               /* Gray */
-    .pupil { color: #88cc22; }                /* Green */
-    .specialist { color: #03a89e; }           /* Cyan */
-    .expert { color: #0000ff; }               /* Blue */
-    .candidate-master { color: #aa00aa; }     /* Violet */
-    .master { color: #ff8c00; }               /* Orange */
-    .international-master { color: #ff0000; } /* Red */
-    .grandmaster { color: #ff0000; }          /* Red */
-    .international-grandmaster { color: #ff0000; } /* Red */
-    .legendary-grandmaster { color: #aa0000; }     /* Dark Red */
-  </style>
+  <link rel="stylesheet" href="css/profile.css">
 </head>
 <body>
+  <div class="input-group">
+    <input type="text" id="handleInput" placeholder="Enter Codeforces handle" onkeypress="handleKey(event)">
+    <button onclick="fetchProfile()">View</button>
+  </div>
 
-  <h1>Codeforces Profile Viewer</h1>
-  <input type="text" id="handleInput" placeholder="Enter Codeforces handle" onkeypress="handleKey(event)">
-
-  <div class="card" id="profile-card" style="display: none;">
+  <div class="card" id="profile-card">
     <div class="left">
       <img id="avatar" src="" alt="User Avatar">
     </div>
     <div class="right">
-      <div class="info"><span class="label">Handle:</span> <span id="handle"></span></div>
-      <div class="info"><span class="label">Rating:</span> <span id="rating"></span></div>
-      <div class="info"><span class="label">Max Rating:</span> <span id="maxRating"></span></div>
-      <div class="info"><span class="label">Contribution:</span> <span id="contribution"></span></div>
-      <div class="info"><span class="label">Rank:</span> <span id="rankName" class="rank-title"></span></div>
+      <h2 id="handle">Handle</h2>
+      <div class="rank" id="rank">Rank</div>
+      <p id="rating">Rating: N/A</p>
+      <p id="contribution">Contribution: N/A</p>
+      <p id="max-rating">Max Rating: N/A</p>
+      <p id="rank-name">Rank Name: N/A</p>
     </div>
   </div>
 
-  <script>
-    function handleKey(e) {
-      if (e.key === 'Enter') {
-        fetchProfile();
-      }
-    }
-
-    function fetchProfile() {
-      const handle = document.getElementById('handleInput').value.trim();
-      if (!handle) return;
-
-      fetch(`https://codeforces.com/api/user.info?handles=${handle}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.status !== 'OK') {
-            alert('User not found!');
-            return;
-          }
-
-          const user = data.result[0];
-          const card = document.getElementById('profile-card');
-          const rankNameEl = document.getElementById('rankName');
-          rankNameEl.className = 'rank-title'; // reset
-
-          if (user.rank) {
-            const cssClass = user.rank.toLowerCase().replace(/\s+/g, '-');
-            rankNameEl.classList.add(cssClass);
-          }
-
-          // Set data
-          document.getElementById('avatar').src = user.avatar;
-          document.getElementById('handle').textContent = user.handle;
-          document.getElementById('rating').textContent = user.rating || 'N/A';
-          document.getElementById('maxRating').textContent = user.maxRating || 'N/A';
-          document.getElementById('contribution').textContent = user.contribution || 'N/A';
-          document.getElementById('rankName').textContent = user.rank || 'N/A';
-
-          card.style.display = 'flex';
-        })
-        .catch(err => {
-          alert('Error fetching profile');
-          console.error(err);
-        });
-    }
-  </script>
-
+  <script src="js/profile.js"></script>
 </body>
 </html>
