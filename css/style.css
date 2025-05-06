@@ -24,13 +24,41 @@ h1 {
   color: #111827;
 }
 
-.toggle-options, .handle-controls {
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
+.toggle-button-group {
+  display: inline-flex;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.toggle-button-group input[type="radio"] {
+  display: none;
+}
+
+.toggle-button-group label {
+  padding: 10px 20px;
+  cursor: pointer;
   font-weight: 600;
-  color: #374151;
+  background-color: white;
+  color: #3b82f6;
+  user-select: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.toggle-button-group .left-btn {
+  border-right: 1px solid #3b82f6;
+  border-radius: 8px 0 0 8px;
+}
+
+.toggle-button-group .right-btn {
+  border-left: 1px solid #3b82f6;
+  border-radius: 0 8px 8px 0;
+}
+
+.toggle-button-group input[type="radio"]:checked + label {
+  background-color: #3b82f6;
+  color: white;
 }
 
 .input-container {
