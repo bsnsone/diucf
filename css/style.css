@@ -1,3 +1,4 @@
+/* Shared styles */
 body {
   font-family: 'Inter', sans-serif;
   background-color: #f3f4f6;
@@ -7,6 +8,7 @@ body {
   height: 100vh;
   margin: 0;
 }
+
 .container {
   background-color: #ffffff;
   padding: 30px;
@@ -15,55 +17,39 @@ body {
   width: 600px;
   text-align: center;
 }
+
 h1 {
   font-size: 24px;
   margin-bottom: 20px;
   color: #111827;
 }
-.toggle-options {
+
+.toggle-options, .handle-controls {
   margin-bottom: 15px;
   display: flex;
   justify-content: center;
-  gap: 0;
+  gap: 20px;
   font-weight: 600;
   color: #374151;
 }
-.toggle-options label {
-  padding: 10px 20px;
-  border-radius: 8px 0 0 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  border: 1px solid #ccc;
-  border-right: none;
-}
-.toggle-options input {
-  display: none;
-}
-.toggle-options label:last-child {
-  border-radius: 0 8px 8px 0;
-  border-left: none;
-}
-.toggle-options input:checked + label {
-  background-color: #3b82f6;
-  color: white;
-}
-.toggle-options label:hover {
-  background-color: #e2e8f0;
-}
+
 .input-container {
   display: flex;
   gap: 4px;
   margin-bottom: 20px;
 }
+
 input, select, button {
   padding: 12px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
 }
+
 input, select {
   width: 82%;
 }
+
 button {
   width: 18%;
   background-color: #3b82f6;
@@ -72,35 +58,63 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+
 button:hover {
   background-color: #2563eb;
 }
+
 #result {
   margin-top: 25px;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
 }
+
 th, td {
   padding: 12px;
   text-align: center;
 }
+
 th {
   background-color: #f1f5f9;
   font-weight: 600;
 }
+
 td {
   font-weight: bold;
   border-top: 1px solid #e5e7eb;
 }
+
 .delta-positive { color: green; }
 .delta-negative { color: red; }
 .delta-zero { color: gray; }
+
 .contest-title {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 10px;
   color: #1f2937;
+}
+
+.manage-handles-link {
+  text-decoration: none;
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.manage-handles-link:hover {
+  text-decoration: underline;
+}
+
+.back-link {
+  text-decoration: none;
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.back-link:hover {
+  text-decoration: underline;
 }
