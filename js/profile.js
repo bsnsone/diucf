@@ -43,10 +43,10 @@ function fetchProfile() {
       const rank = user.rank?.toLowerCase().replace(/\s/g, '-');
       if (rank) {
         card.classList.add(rank);
-        handleElem.classList.add(rank);
-        rankElem.classList.add(rank);
-        ratingElem.classList.add(rank);
-        rankNameElem.classList.add(rank);
+        handleElem.classList.add(`rank-color-${rank}`);
+        rankElem.classList.add(`rank-color-${rank}`);
+        ratingElem.classList.add(`rank-color-${rank}`);
+        rankNameElem.classList.add(`rank-color-${rank}`);
         rankElem.textContent = rankName;
       } else {
         rankElem.textContent = 'Unrated';
