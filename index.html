@@ -11,12 +11,18 @@
   <div class="container">
     <h1>Codeforces Rating Viewer</h1>
 
-  <div class="toggle-button-group">
+<!--   <div class="toggle-button-group">
     <input type="radio" name="mode" value="id" id="searchById" checked onchange="toggleMode()">
     <label for="searchById" class="left-btn">Search by ID</label>
     <input type="radio" name="mode" value="dropdown" id="chooseFromList" onchange="toggleMode()">
     <label for="chooseFromList" class="right-btn">Choose from List</label>
- </div>
+ </div> -->
+
+    <div class="toggle-switch">
+      <button id="btn-id" class="active" onclick="setMode('id')">Search by ID</button>
+      <button id="btn-dropdown" onclick="setMode('dropdown')">Choose from List</button>
+    </div>
+
 
     <div class="input-container" id="inputById">
       <input type="number" id="contestId" placeholder="Enter Contest ID (e.g., 2108)">
