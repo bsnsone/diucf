@@ -79,7 +79,7 @@ body {
   font-weight: normal;
 }
 
-/* Make handle-value, rating-value, rank-value, location-value, organization-value, friend-count-value, max-rating-value, and rank-name-value bold when they have a rank-color class */
+/* Make handle-value, rating-value, rank-value, max-rating-value, and rank-name-value bold when they have a rank-color class */
 span.rank-color-newbie, span.rank-color-pupil, span.rank-color-specialist, span.rank-color-expert,
 span.rank-color-candidate-master, span.rank-color-master, span.rank-color-international-master,
 span.rank-color-grandmaster, span.rank-color-international-grandmaster, span.rank-color-legendary-grandmaster {
@@ -89,7 +89,7 @@ span.rank-color-grandmaster, span.rank-color-international-grandmaster, span.ran
 /* Rank colors for specific elements */
 .rank-color-newbie { color: #999999; } /* darker gray */
 .rank-color-pupil { color: #16b316; } /* dark green */
-.rank-color-specialist { color: #1a98a6; } /* darker cyan-blue */
+.rank-color-specialist { color: #00ffaa; } /* darker cyan-green */
 .rank-color-expert { color: #0000ff; } /* darker blue */
 .rank-color-candidate-master { color: #b925b9; } /* darker purple */
 .rank-color-master { color: #ffab03; } /* darker orange */
