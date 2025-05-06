@@ -46,8 +46,9 @@ function fetchProfile() {
 
       document.getElementById('handle-value').textContent = user.handle;
       document.getElementById('rating-value').textContent = user.rating ?? 'N/A';
-      const location = [user.city, user.country].filter(Boolean).join(', ') || 'N/A';
-      document.getElementById('location').textContent = `Location: ${location}`;
+      document.getElementById('location-value').textContent = [user.city, user.country].filter(Boolean).join(', ') || 'N/A';
+      document.getElementById('organization-value').textContent = user.organization || 'N/A';
+      document.getElementById('friend-count-value').textContent = user.friendOfCount ?? 'N/A';
       document.getElementById('max-rating-value').textContent = user.maxRating ?? 'N/A';
 
       // Capitalize the first letter of the current rank name
@@ -63,6 +64,9 @@ function fetchProfile() {
       const handleElem = document.getElementById('handle-value');
       const rankElem = document.getElementById('rank-value');
       const ratingElem = document.getElementById('rating-value');
+      const locationElem = document.getElementById('location-value');
+      const organizationElem = document.getElementById('organization-value');
+      const friendCountElem = document.getElementById('friend-count-value');
       const maxRatingElem = document.getElementById('max-rating-value');
       const rankNameElem = document.getElementById('rank-name-value');
 
@@ -71,6 +75,9 @@ function fetchProfile() {
       handleElem.className = '';
       rankElem.className = '';
       ratingElem.className = '';
+      locationElem.className = '';
+      organizationElem.className = '';
+      friendCountElem.className = '';
       maxRatingElem.className = '';
       rankNameElem.className = '';
 
@@ -81,6 +88,9 @@ function fetchProfile() {
         handleElem.classList.add(`rank-color-${currentRank}`);
         rankElem.classList.add(`rank-color-${currentRank}`);
         ratingElem.classList.add(`rank-color-${currentRank}`);
+        locationElem.classList.add(`rank-color-${currentRank}`);
+        organizationElem.classList.add(`rank-color-${currentRank}`);
+        friendCountElem.classList.add(`rank-color-${currentRank}`);
         maxRatingElem.classList.add(`rank-color-${maxRank || currentRank}`);
         rankNameElem.classList.add(`rank-color-${maxRank || currentRank}`);
       } else {
