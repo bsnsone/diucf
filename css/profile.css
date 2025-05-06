@@ -78,24 +78,25 @@ body {
 }
 
 /* Rank colors */
-.rank.newbie { color: #CCCCCC; } /* gray */
-.rank.pupil { color: #77FF77; } /* green */
-.rank.specialist { color: #77DDBB; } /* cyan-green */
-.rank.expert { color: #AAAAFF; } /* blue */
-.rank.candidate-master { color: #FF88FF; } /* purple */
-.rank.master { color: #FFBB55; } /* orange */
-.rank.international-master { color: #FF7755; } /* red-orange */
-.rank.grandmaster { color: #FF3333; } /* red */
-.rank.international-grandmaster { color: #FF0000; } /* deep red */
-.rank.legendary-grandmaster { color: #AA0000; } /* dark red */
+.rank.newbie { color: #999999; } /* darker gray */
+.rank.pupil { color: #33AA33; } /* dark green */
+.rank.specialist { color: #339977; } /* darker cyan-green */
+.rank.expert { color: #6666CC; } /* darker blue */
+.rank.candidate-master { color: #CC66CC; } /* darker purple */
+.rank.master { color: #CC8800; } /* darker orange */
+.rank.international-master { color: #CC5533; } /* darker red-orange */
+.rank.grandmaster { color: #CC2222; } /* darker red */
+.rank.international-grandmaster { color: #CC0000; } /* darker deep red */
+.rank.legendary-grandmaster { color: #880000; } /* darker dark red */
 
 /* Color for text rank name */
-.rank.newbie { color: #CCCCCC; }
-.rank.pupil { color: #77FF77; }
-.rank.specialist { color: #77DDBB; }
-.rank.expert { color: #AAAAFF; }
-.rank.candidate-master { color: #FF88FF; }
-.rank.master { color: #FFBB55; }
-.rank.international-master { color: #FF7755; }
-.rank.grandmaster { color: #FF3333; }
-.rank.international-grandmaster { color: #FF0000; }
+.rank.newbie { color: #999999; }
+.rank.pupil { color: #33AA33; }
+.rank.specialist { color: #339977; }
+.rank.expert { color: #6666CC; }
+.rank.candidate-master { color: #CC66CC; }
+.rank.master { color: #CC8800; }
+.rank.international-master { color: #CC5533; }
+.rank.grandmaster { color: #CC2222; }
+.rank.international-grandmaster { color: #CC0000; }
+.rank.legendary-grandmaster { color: #880000; }
