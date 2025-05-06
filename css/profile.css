@@ -78,16 +78,16 @@ body {
 }
 
 /* Rank colors */
-.newbie { border: 3px solid #CCCCCC; } /* gray */
-.pupil { border: 3px solid #77FF77; } /* green */
-.specialist { border: 3px solid #77DDBB; } /* cyan-green */
-.expert { border: 3px solid #AAAAFF; } /* blue */
-.candidate-master { border: 3px solid #FF88FF; } /* purple */
-.master { border: 3px solid #FFBB55; } /* orange */
-.international-master { border: 3px solid #FF7755; } /* red-orange */
-.grandmaster { border: 3px solid #FF3333; } /* red */
-.international-grandmaster { border: 3px solid #FF0000; } /* deep red */
-.legendary-grandmaster { border: 3px solid #AA0000; } /* dark red */
+.rank.newbie { color: #CCCCCC; } /* gray */
+.rank.pupil { color: #77FF77; } /* green */
+.rank.specialist { color: #77DDBB; } /* cyan-green */
+.rank.expert { color: #AAAAFF; } /* blue */
+.rank.candidate-master { color: #FF88FF; } /* purple */
+.rank.master { color: #FFBB55; } /* orange */
+.rank.international-master { color: #FF7755; } /* red-orange */
+.rank.grandmaster { color: #FF3333; } /* red */
+.rank.international-grandmaster { color: #FF0000; } /* deep red */
+.rank.legendary-grandmaster { color: #AA0000; } /* dark red */
 
 /* Color for text rank name */
 .rank.newbie { color: #CCCCCC; }
