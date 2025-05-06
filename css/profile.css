@@ -89,7 +89,7 @@ span.rank-color-grandmaster, span.rank-color-international-grandmaster, span.ran
 /* Rank colors for specific elements */
 .rank-color-newbie { color: #999999; } /* darker gray */
 .rank-color-pupil { color: #16b316; } /* dark green */
-.rank-color-specialist { color: #00ffaa; } /* darker cyan-green */
+.rank-color-specialist { color: #1a98a6; } /* darker cyan-blue */
 .rank-color-expert { color: #0000ff; } /* darker blue */
 .rank-color-candidate-master { color: #b925b9; } /* darker purple */
 .rank-color-master { color: #ffab03; } /* darker orange */
