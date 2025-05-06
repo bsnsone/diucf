@@ -7,7 +7,6 @@
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f4f4f4;
-      color: #333;
       padding: 40px;
       text-align: center;
     }
@@ -22,67 +21,79 @@
     }
 
     .card {
-      padding: 30px;
-      border-radius: 15px;
-      width: 350px;
+      background-color: white;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      display: flex;
+      width: 600px;
       margin: 0 auto;
-      background-color: #fff;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+      text-align: left;
+      padding: 20px;
     }
 
-    .card img {
-      border-radius: 50%;
+    .left {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .left img {
       width: 120px;
       height: 120px;
-      margin-bottom: 20px;
+      border-radius: 10px;
+      border: 1px solid #aaa;
     }
 
-    h2 {
-      margin-bottom: 10px;
+    .right {
+      flex: 2;
+      padding-left: 20px;
     }
 
     .info {
-      margin-bottom: 8px;
-      font-size: 1.1rem;
+      margin: 6px 0;
+      font-size: 1.05rem;
     }
 
-    .rating {
-      font-size: 1.5rem;
+    .label {
       font-weight: bold;
     }
 
     .rank-title {
       font-size: 1.2rem;
-      margin-top: 10px;
       font-weight: bold;
     }
 
-    /* Rank-based background colors */
-    .newbie { background-color: #cccccc; }
-    .pupil { background-color: #88cc22; }
-    .specialist { background-color: #77dddd; }
-    .expert { background-color: #00bfff; }
-    .candidate-master { background-color: #ffcc00; }
-    .master { background-color: #ff8800; }
-    .international-master { background-color: #ff44aa; }
-    .grandmaster { background-color: #ff2222; }
-    .international-grandmaster { background-color: #cc0000; }
-    .legendary-grandmaster { background-color: #aa0000; }
+    /* Rank-based text colors only */
+    .newbie { color: #808080; }               /* Gray */
+    .pupil { color: #88cc22; }                /* Green */
+    .specialist { color: #03a89e; }           /* Cyan */
+    .expert { color: #0000ff; }               /* Blue */
+    .candidate-master { color: #aa00aa; }     /* Violet */
+    .master { color: #ff8c00; }               /* Orange */
+    .international-master { color: #ff0000; } /* Red */
+    .grandmaster { color: #ff0000; }          /* Red */
+    .international-grandmaster { color: #ff0000; } /* Red */
+    .legendary-grandmaster { color: #aa0000; }     /* Dark Red */
   </style>
 </head>
 <body>
 
   <h1>Codeforces Profile Viewer</h1>
   <input type="text" id="handleInput" placeholder="Enter Codeforces handle" onkeypress="handleKey(event)">
-  
+
   <div class="card" id="profile-card" style="display: none;">
-    <img id="avatar" src="" alt="User Avatar">
-    <h2 id="handle"></h2>
-    <div class="rank-title" id="rank"></div>
-    <div class="info" id="rating">Rating: </div>
-    <div class="info" id="maxRating">Max Rating: </div>
-    <div class="info" id="contribution">Contribution: </div>
-    <div class="info" id="rankName">Rank: </div>
+    <div class="left">
+      <img id="avatar" src="" alt="User Avatar">
+    </div>
+    <div class="right">
+      <div class="info"><span class="label">Handle:</span> <span id="handle"></span></div>
+      <div class="info"><span class="label">Rating:</span> <span id="rating"></span></div>
+      <div class="info"><span class="label">Max Rating:</span> <span id="maxRating"></span></div>
+      <div class="info"><span class="label">Contribution:</span> <span id="contribution"></span></div>
+      <div class="info"><span class="label">Rank:</span> <span id="rankName" class="rank-title"></span></div>
+    </div>
   </div>
 
   <script>
@@ -106,23 +117,23 @@
 
           const user = data.result[0];
           const card = document.getElementById('profile-card');
-          card.className = 'card'; // Reset previous classes
+          const rankNameEl = document.getElementById('rankName');
+          rankNameEl.className = 'rank-title'; // reset
 
-          // Add rank class
           if (user.rank) {
-            const cssClass = user.rank.toLowerCase().replace(' ', '-');
-            card.classList.add(cssClass);
+            const cssClass = user.rank.toLowerCase().replace(/\s+/g, '-');
+            rankNameEl.classList.add(cssClass);
           }
 
           // Set data
           document.getElementById('avatar').src = user.avatar;
           document.getElementById('handle').textContent = user.handle;
-          document.getElementById('rank').textContent = `Rank: ${user.rank || 'N/A'}`;
-          document.getElementById('rating').textContent = `Rating: ${user.rating || 'N/A'}`;
-          document.getElementById('maxRating').textContent = `Max Rating: ${user.maxRating || 'N/A'}`;
-          document.getElementById('contribution').textContent = `Contribution: ${user.contribution || 'N/A'}`;
-          document.getElementById('rankName').textContent = `Rank Name: ${user.rank || 'N/A'}`;
-          card.style.display = 'block';
+          document.getElementById('rating').textContent = user.rating || 'N/A';
+          document.getElementById('maxRating').textContent = user.maxRating || 'N/A';
+          document.getElementById('contribution').textContent = user.contribution || 'N/A';
+          document.getElementById('rankName').textContent = user.rank || 'N/A';
+
+          card.style.display = 'flex';
         })
         .catch(err => {
           alert('Error fetching profile');
