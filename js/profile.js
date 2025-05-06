@@ -20,17 +20,19 @@ function fetchProfile() {
       document.getElementById('rating-value').textContent = user.rating ?? 'N/A';
       const location = [user.city, user.country].filter(Boolean).join(', ') || 'N/A';
       document.getElementById('location').textContent = `Location: ${location}`;
-      document.getElementById('max-rating').textContent = `Max Rating: ${user.maxRating ?? 'N/A'}`;
+      document.getElementById('max-rating-value').textContent = user.maxRating ?? 'N/A';
 
       // Capitalize the first letter of the rank name
       const rankName = user.rank
         ? user.rank.charAt(0).toUpperCase() + user.rank.slice(1).toLowerCase()
         : 'N/A';
+      document.getElementById('rank-value').textContent = rankName;
       document.getElementById('rank-name-value').textContent = rankName;
 
       const handleElem = document.getElementById('handle-value');
       const rankElem = document.getElementById('rank-value');
       const ratingElem = document.getElementById('rating-value');
+      const maxRatingElem = document.getElementById('max-rating-value');
       const rankNameElem = document.getElementById('rank-name-value');
 
       // Reset classes
@@ -38,6 +40,7 @@ function fetchProfile() {
       handleElem.className = '';
       rankElem.className = '';
       ratingElem.className = '';
+      maxRatingElem.className = '';
       rankNameElem.className = '';
 
       const rank = user.rank?.toLowerCase().replace(/\s/g, '-');
@@ -46,10 +49,11 @@ function fetchProfile() {
         handleElem.classList.add(`rank-color-${rank}`);
         rankElem.classList.add(`rank-color-${rank}`);
         ratingElem.classList.add(`rank-color-${rank}`);
+        maxRatingElem.classList.add(`rank-color-${rank}`);
         rankNameElem.classList.add(`rank-color-${rank}`);
-        rankElem.textContent = rankName;
       } else {
         rankElem.textContent = 'Unrated';
+        rankNameElem.textContent = 'Unrated';
       }
 
       // Show the card after successful fetch
