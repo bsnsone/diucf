@@ -38,7 +38,7 @@ body {
 }
 
 .card {
-  display: flex;
+  display: none; /* Hide card by default */
   background-color: white;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -77,6 +77,13 @@ body {
   margin-bottom: 10px;
 }
 
+/* Make rating and rank-name bold when they have a rank class */
+p.newbie, p.pupil, p.specialist, p.expert, p.candidate-master,
+p.master, p.international-master, p.grandmaster,
+p.international-grandmaster, p.legendary-grandmaster {
+  font-weight: bold;
+}
+
 /* Rank colors */
 .rank.newbie { color: #999999; } /* darker gray */
 .rank.pupil { color: #16b316; } /* dark green */
@@ -90,13 +97,13 @@ body {
 .rank.legendary-grandmaster { color: #880000; } /* darker dark red */
 
 /* Color for text rank name */
-.rank.newbie { color: #999999; }
-.rank.pupil { color: #16b316; }
-.rank.specialist { color: #00ffaa; }
-.rank.expert { color: #0000ff; }
-.rank.candidate-master { color: #b925b9; }
-.rank.master { color: #ffab03; }
-.rank.international-master { color: #ff9900; }
-.rank.grandmaster { color: #CC2222; }
-.rank.international-grandmaster { color: #CC0000; }
-.rank.legendary-grandmaster { color: #880000; }
+.newbie { color: #999999; }
+.pupil { color: #16b316; }
+.specialist { color: #00ffaa; }
+.expert { color: #0000ff; }
+.candidate-master { color: #b925b9; }
+.master { color: #ffab03; }
+.international-master { color: #ff9900; }
+.grandmaster { color: #CC2222; }
+.international-grandmaster { color: #CC0000; }
+.legendary-grandmaster { color: #880000; }
