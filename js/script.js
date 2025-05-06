@@ -77,4 +77,21 @@ async function removeHandle() {
   }
 }
 
+// for toggling
+function setMode(mode) {
+  document.getElementById("btn-id").classList.remove("active");
+  document.getElementById("btn-dropdown").classList.remove("active");
+
+  if (mode === "id") {
+    document.getElementById("btn-id").classList.add("active");
+    document.getElementById("inputById").style.display = "flex";
+    document.getElementById("inputByDropdown").style.display = "none";
+  } else {
+    document.getElementById("btn-dropdown").classList.add("active");
+    document.getElementById("inputById").style.display = "none";
+    document.getElementById("inputByDropdown").style.display = "flex";
+  }
+}
+
+
 // Additional functions for handling ratings and other interactions will be added as needed
