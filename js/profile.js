@@ -1,43 +1,31 @@
-function handleKey(event) {
-  if (event.key === "Enter") {
-    fetchProfile();
-  }
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Codeforces Profile Card</title>
+  <link rel="icon" href="https://imransihab0.github.io/amar_ami/is.png" type="image/png" sizes="32x32">
+  <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+  <div class="input-group">
+    <input type="text" id="handleInput" placeholder="Enter Codeforces handle" onkeypress="handleKey(event)">
+    <button onclick="fetchProfile()">View</button>
+  </div>
 
-function fetchProfile() {
-  const handle = document.getElementById('handleInput').value.trim();
-  if (!handle) return;
+  <div class="card" id="profile-card">
+    <div class="left">
+      <img id="avatar" src="" alt="User Avatar">
+    </div>
+    <div class="right">
+      <h2 id="handle">Handle</h2>
+      <div class="rank" id="rank">Rank</div>
+      <p id="rating">Rating: N/A</p>
+      <p id="location">Location: N/A</p>
+      <p id="max-rating">Max Rating: N/A</p>
+      <p id="rank-name">Rank Name: N/A</p>
+    </div>
+  </div>
 
-  fetch(`https://codeforces.com/api/user.info?handles=${handle}`)
-    .then(res => res.json())
-    .then(data => {
-      const user = data.result[0];
-
-      document.getElementById('avatar').src = user.avatar;
-      document.getElementById('handle').textContent = user.handle;
-      document.getElementById('rating').textContent = `Rating: ${user.rating ?? 'N/A'}`;
-      document.getElementById('contribution').textContent = `Contribution: ${user.contribution ?? 'N/A'}`;
-      document.getElementById('max-rating').textContent = `Max Rating: ${user.maxRating ?? 'N/A'}`;
-      document.getElementById('rank-name').textContent = `Rank Name: ${user.rank ?? 'N/A'}`;
-
-      const card = document.getElementById('profile-card');
-      const rankElem = document.getElementById('rank');
-
-      // Reset classes
-      card.className = 'card';
-      rankElem.className = 'rank';
-
-      const rank = user.rank?.toLowerCase().replace(/\s/g, '-');
-      if (rank) {
-        card.classList.add(rank);
-        rankElem.classList.add(rank);
-        rankElem.textContent = user.rank;
-      } else {
-        rankElem.textContent = 'Unrated';
-      }
-    })
-    .catch(err => {
-      console.error('Failed to load user info:', err);
-      alert('Invalid handle or failed to fetch data.');
-    });
-}
+  <script src="js/profile.js"></script>
+</body>
+</html>
