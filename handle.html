@@ -1,3 +1,4 @@
+<!-- handle.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,7 @@
   <title>Handle Management</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="icon" href="https://imransihab0.github.io/amar_ami/is.png" type="image/png" sizes="32x32">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/handle.css">
 </head>
 <body>
   <div class="container">
@@ -13,13 +14,15 @@
 
     <div class="handle-controls">
       <input type="text" id="newHandle" placeholder="Add handle (e.g., imransihab0)">
-      <button onclick="addHandle()">Add</button>
-      <button onclick="removeHandle()">Remove</button>
+      <div class="button-group">
+        <button onclick="addHandle()">Add</button>
+        <button onclick="removeHandle()">Remove</button>
+      </div>
     </div>
 
     <div id="result"></div>
 
-    <a href="index.html" class="back-link">Back to Rating Viewer</a> <!-- Back to main page -->
+    <a href="index.html" class="back-link">Back to Rating Viewer</a>
   </div>
 
   <script src="js/script.js"></script>
