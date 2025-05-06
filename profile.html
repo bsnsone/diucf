@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Codeforces Profile</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .card {
+      padding: 30px;
+      border-radius: 15px;
+      width: 350px;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    .card img {
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .info {
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    .rating {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .rank-title {
+      font-size: 1.2rem;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    /* Rank-based colors */
+    .newbie { background: #8d88ff; }
+    .pupil { background: #6fd1fe; }
+    .specialist { background: #50c878; }
+    .expert { background: #f3c700; }
+    .candidate-master { background: #ff5f00; }
+    .master { background: #ff1493; }
+    .international-master { background: #1e90ff; }
+    .grandmaster { background: #ff4500; }
+    .international-grandmaster { background: #ffd700; }
+    .legendary-grandmaster { background: #8b0000; }
+  </style>
+</head>
+<body>
+  <div class="card" id="profile-card">
+    <img id="avatar" src="" alt="User Avatar">
+    <h2 id="handle"></h2>
+    <div class="rank-title" id="rank"></div>
+    <div class="info">
+      <span id="rating">Rating: N/A</span>
+    </div>
+    <div class="info">
+      <span id="contribution">Contribution: N/A</span>
+    </div>
+    <div class="info">
+      <span id="max-rating">Max Rating: N/A</span>
+    </div>
+    <div class="info">
+      <span id="rank-name">Rank: N/A</span>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const handle = urlParams.get('handle');
+    
+    fetch(`https://codeforces.com/api/user.info?handles=${handle}`)
+      .then(res => res.json())
+      .then(data => {
+        const user = data.result[0];
+
+        // Set user avatar and handle
+        document.getElementById('avatar').src = user.avatar;
+        document.getElementById('handle').textContent = user.handle;
+
+        // Set user rating and rank info
+        document.getElementById('rating').textContent = `Rating: ${user.rating || 'N/A'}`;
+        document.getElementById('rank').textContent = `Rank: ${user.rank || 'N/A'}`;
+        document.getElementById('contribution').textContent = `Contribution: ${user.contribution || 'N/A'}`;
+        document.getElementById('max-rating').textContent = `Max Rating: ${user.maxRating || 'N/A'}`;
+        document.getElementById('rank-name').textContent = `Rank Name: ${user.rank || 'N/A'}`;
+
+        // Add rank-based color to the card
+        const card = document.getElementById('profile-card');
+        const rank = user.rank;
+
+        switch(rank) {
+          case 'Newbie':
+            card.classList.add('newbie');
+            break;
+          case 'Pupil':
+            card.classList.add('pupil');
+            break;
+          case 'Specialist':
+            card.classList.add('specialist');
+            break;
+          case 'Expert':
+            card.classList.add('expert');
+            break;
+          case 'Candidate Master':
+            card.classList.add('candidate-master');
+            break;
+          case 'Master':
+            card.classList.add('master');
+            break;
+          case 'International Master':
+            card.classList.add('international-master');
+            break;
+          case 'Grandmaster':
+            card.classList.add('grandmaster');
+            break;
+          case 'International Grandmaster':
+            card.classList.add('international-grandmaster');
+            break;
+          case 'Legendary Grandmaster':
+            card.classList.add('legendary-grandmaster');
+            break;
+          default:
+            break;
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching user info:', err);
+      });
+  </script>
+</body>
+</html>
