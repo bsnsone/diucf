@@ -16,8 +16,8 @@ function fetchProfile() {
       const user = data.result[0];
 
       document.getElementById('avatar').src = user.avatar;
-      document.getElementById('handle').textContent = user.handle;
-      document.getElementById('rating').textContent = `Rating: ${user.rating ?? 'N/A'}`;
+      document.getElementById('handle-value').textContent = user.handle;
+      document.getElementById('rating-value').textContent = user.rating ?? 'N/A';
       const location = [user.city, user.country].filter(Boolean).join(', ') || 'N/A';
       document.getElementById('location').textContent = `Location: ${location}`;
       document.getElementById('max-rating').textContent = `Max Rating: ${user.maxRating ?? 'N/A'}`;
@@ -26,21 +26,24 @@ function fetchProfile() {
       const rankName = user.rank
         ? user.rank.charAt(0).toUpperCase() + user.rank.slice(1).toLowerCase()
         : 'N/A';
-      document.getElementById('rank-name').textContent = `Rank Name: ${rankName}`;
+      document.getElementById('rank-name-value').textContent = rankName;
 
-      const rankElem = document.getElementById('rank');
-      const ratingElem = document.getElementById('rating');
-      const rankNameElem = document.getElementById('rank-name');
+      const handleElem = document.getElementById('handle-value');
+      const rankElem = document.getElementById('rank-value');
+      const ratingElem = document.getElementById('rating-value');
+      const rankNameElem = document.getElementById('rank-name-value');
 
       // Reset classes
       card.className = 'card';
-      rankElem.className = 'rank';
+      handleElem.className = '';
+      rankElem.className = '';
       ratingElem.className = '';
       rankNameElem.className = '';
 
       const rank = user.rank?.toLowerCase().replace(/\s/g, '-');
       if (rank) {
         card.classList.add(rank);
+        handleElem.classList.add(rank);
         rankElem.classList.add(rank);
         ratingElem.classList.add(rank);
         rankNameElem.classList.add(rank);
