@@ -1,0 +1,101 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f2f2f2;
+  padding: 40px;
+  text-align: center;
+}
+
+.input-group {
+  display: flex;
+  justify-content: center;
+  width: 600px;
+  margin: 0 auto 30px auto;
+}
+
+.input-group input {
+  padding: 10px;
+  font-size: 16px;
+  flex: 1;
+  border: 1px solid #ccc;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  outline: none;
+}
+
+.input-group button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  cursor: pointer;
+}
+
+.input-group button:hover {
+  background-color: #0055aa;
+}
+
+.card {
+  display: flex;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.card .left {
+  background: #e0e0e0;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card .left img {
+  border-radius: 5px;
+  width: 120px;
+  height: 120px;
+}
+
+.card .right {
+  padding: 20px;
+  text-align: left;
+  flex: 1;
+}
+
+.card .right h2 {
+  margin: 0 0 10px 0;
+}
+
+.card .right .rank {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+/* Rank colors */
+.newbie { border: 3px solid #CCCCCC; } /* gray */
+.pupil { border: 3px solid #77FF77; } /* green */
+.specialist { border: 3px solid #77DDBB; } /* cyan-green */
+.expert { border: 3px solid #AAAAFF; } /* blue */
+.candidate-master { border: 3px solid #FF88FF; } /* purple */
+.master { border: 3px solid #FFBB55; } /* orange */
+.international-master { border: 3px solid #FF7755; } /* red-orange */
+.grandmaster { border: 3px solid #FF3333; } /* red */
+.international-grandmaster { border: 3px solid #FF0000; } /* deep red */
+.legendary-grandmaster { border: 3px solid #AA0000; } /* dark red */
+
+/* Color for text rank name */
+.rank.newbie { color: #CCCCCC; }
+.rank.pupil { color: #77FF77; }
+.rank.specialist { color: #77DDBB; }
+.rank.expert { color: #AAAAFF; }
+.rank.candidate-master { color: #FF88FF; }
+.rank.master { color: #FFBB55; }
+.rank.international-master { color: #FF7755; }
+.rank.grandmaster { color: #FF3333; }
+.rank.international-grandmaster { color: #FF0000; }
