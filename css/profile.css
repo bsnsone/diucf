@@ -59,6 +59,8 @@ body {
   border-radius: 5px;
   width: 120px;
   height: 120px;
+  object-fit: cover; /* Ensure image fits the box without distortion */
+  object-position: center; /* Center the image */
 }
 
 .card .right {
