@@ -79,7 +79,7 @@ body {
   font-weight: normal;
 }
 
-/* Make handle-value, rating-value, rank-value, max-rating-value, and rank-name-value bold when they have a rank-color class */
+/* Make handle-value, rating-value, rank-value, location-value, organization-value, friend-count-value, max-rating-value, and rank-name-value bold when they have a rank-color class */
 span.rank-color-newbie, span.rank-color-pupil, span.rank-color-specialist, span.rank-color-expert,
 span.rank-color-candidate-master, span.rank-color-master, span.rank-color-international-master,
 span.rank-color-grandmaster, span.rank-color-international-grandmaster, span.rank-color-legendary-grandmaster {
