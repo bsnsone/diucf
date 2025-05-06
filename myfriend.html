@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Codeforces Friends</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: white;
+      padding: 40px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      border-collapse: collapse;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    td a {
+      color: white;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Codeforces Friends</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Handle</th>
+      </tr>
+    </thead>
+    <tbody id="friends-list"></tbody>
+  </table>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script>
+    const apiKey = 'c7628a4be9a2cf8306c0c7abc61c824a21357935';
+    const apiSecret = '5668f12542e06a6ee37c81205627f238fea2d0c0';
+
+    function generateURL() {
+      const method = 'user.friends';
+      const onlyOnline = 'false';
+      const time = Math.floor(Date.now() / 1000);
+      const rand = Array.from({length: 6}, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
+      const params = `apiKey=${apiKey}&onlyOnline=${onlyOnline}&time=${time}`;
+      const toHash = `${rand}/${method}?${params}#${apiSecret}`;
+      const hash = CryptoJS.SHA512(toHash).toString();
+      const apiSig = rand + hash;
+      return `https://codeforces.com/api/${method}?${params}&apiSig=${apiSig}`;
+    }
+
+    function fetchFriends() {
+      const url = generateURL();
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          const list = document.getElementById('friends-list');
+          if (data.status === 'OK') {
+            data.result.forEach((friend, index) => {
+              const row = document.createElement('tr');
+              row.innerHTML = `<td>${index + 1}</td><td><a href="profile.html?handle=${friend}">${friend}</a></td>`;
+              list.appendChild(row);
+            });
+          } else {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="2">${data.comment}</td>`;
+            list.appendChild(row);
+          }
+        });
+    }
+
+    fetchFriends();
+  </script>
+</body>
+</html>
