@@ -51,45 +51,6 @@ h1 {
   background-color: #e2e8f0;
 }
 
-.handle-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto 20px auto;
-}
-
-.handle-controls input {
-  padding: 10px;
-  font-size: 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.handle-controls button {
-  flex: 1;
-  padding: 10px;
-  font-weight: 600;
-  font-size: 15px;
-  border: none;
-  cursor: pointer;
-  background-color: #3b82f6;
-  color: white;
-  border-radius: 8px;
-  transition: background-color 0.3s;
-}
-
-.handle-controls button:hover {
-  background-color: #2563eb;
-}
-
-.handle-controls button + button {
-  margin-top: 0;
-}
-
 .input-container {
   display: flex;
   gap: 4px;
