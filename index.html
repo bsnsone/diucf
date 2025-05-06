@@ -11,18 +11,12 @@
   <div class="container">
     <h1>Codeforces Rating Viewer</h1>
 
-<!--   <div class="toggle-button-group">
-    <input type="radio" name="mode" value="id" id="searchById" checked onchange="toggleMode()">
-    <label for="searchById" class="left-btn">Search by ID</label>
-    <input type="radio" name="mode" value="dropdown" id="chooseFromList" onchange="toggleMode()">
-    <label for="chooseFromList" class="right-btn">Choose from List</label>
- </div> -->
-
-    <div class="toggle-switch">
-      <button id="btn-id" class="active" onclick="setMode('id')">Search by ID</button>
-      <button id="btn-dropdown" onclick="setMode('dropdown')">Choose from List</button>
+    <div class="toggle-options">
+      <input type="radio" name="mode" value="id" id="searchById" checked onchange="toggleMode()">
+      <label for="searchById">Search by ID</label>
+      <input type="radio" name="mode" value="dropdown" id="chooseFromList" onchange="toggleMode()">
+      <label for="chooseFromList">Choose from List</label>
     </div>
-
 
     <div class="input-container" id="inputById">
       <input type="number" id="contestId" placeholder="Enter Contest ID (e.g., 2108)">
@@ -35,7 +29,9 @@
     </div>
 
     <div class="handle-controls">
-      <a href="handle.html" class="manage-handles-link">Manage Handles</a> <!-- Link to the new page -->
+      <input type="text" id="newHandle" placeholder="Add handle (e.g., imransihab0)">
+      <button onclick="addHandle()">Add</button>
+      <button onclick="removeHandle()">Remove</button>
     </div>
 
     <div id="result"></div>
