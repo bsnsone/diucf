@@ -135,14 +135,50 @@ function displayContests(contests) {
     const contestElement = document.createElement('div');
     contestElement.classList.add('contest');
 
-    const contestTitle = document.createElement('h3');
-    contestTitle.textContent = `Contest ID: ${contest.contestId}`;
-    
-    const contestDetails = document.createElement('p');
-    contestDetails.textContent = `Rank: ${contest.rank} | Rating: ${contest.newRating} (Change: ${contest.newRating - contest.oldRating})`;
+    // Create contest number
+    const contestNumber = document.createElement('div');
+    contestNumber.classList.add('contest-number');
+    contestNumber.textContent = contest.contestId;
 
-    contestElement.appendChild(contestTitle);
-    contestElement.appendChild(contestDetails);
+    // Create contest name
+    const contestName = document.createElement('div');
+    contestName.classList.add('contest-name');
+    contestName.textContent = contest.contestName;
+
+    // Create start time (formatting with date)
+    const startTime = document.createElement('div');
+    startTime.classList.add('contest-start-time');
+    const startDate = new Date(contest.startTime * 1000);
+    startTime.textContent = startDate.toLocaleString(); // Adjust for your timezone
+
+    // Create rank
+    const rank = document.createElement('div');
+    rank.classList.add('contest-rank');
+    rank.textContent = contest.rank;
+
+    // Create solved problems
+    const solved = document.createElement('div');
+    solved.classList.add('contest-solved');
+    solved.textContent = contest.solved;
+
+    // Create rating change
+    const ratingChange = document.createElement('div');
+    ratingChange.classList.add('contest-rating-change');
+    ratingChange.textContent = `${contest.ratingChange >= 0 ? '+' : ''}${contest.ratingChange}`;
+
+    // Create new rating
+    const newRating = document.createElement('div');
+    newRating.classList.add('contest-new-rating');
+    newRating.textContent = contest.newRating;
+
+    // Append all elements to contestElement
+    contestElement.appendChild(contestNumber);
+    contestElement.appendChild(contestName);
+    contestElement.appendChild(startTime);
+    contestElement.appendChild(rank);
+    contestElement.appendChild(solved);
+    contestElement.appendChild(ratingChange);
+    contestElement.appendChild(newRating);
     
     contestResultsContainer.appendChild(contestElement);
   });
