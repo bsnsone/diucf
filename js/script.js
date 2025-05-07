@@ -75,29 +75,26 @@ function toggleMode() {
 
 async function populateContestList() {
     try {
-        const res = await fetch(`${supabaseUrl}/rest/v1/contest_ratings?select=contest_id,contest_name&order=created_at.desc`, {
-            headers: {
-                apikey: supabaseKey,
-                Authorization: `Bearer ${supabaseKey}`
-            }
-        });
-        const contests = await res.json();
+        const res = await fetch("https://codeforces.com/api/contest.list?gym=false");
+        const data = await res.json();
+        if (data.status !== "OK") {
+            console.error("Failed to fetch contest list: API status not OK");
+            return;
+        }
+        const recentContests = data.result.filter(c => c.phase === "FINISHED").slice(0, 30);
         const select = document.getElementById("contestSelect");
         select.innerHTML = "";
-        contests.forEach(contest => {
+        recentContests.forEach(contest => {
             const option = document.createElement("option");
-            option.value = contest.contest_id;
-            option.textContent = contest.contest_name;
+            option.value = contest.id;
+            option.textContent = contest.name;
             select.appendChild(option);
         });
-        if (contests.length === 0) {
-            const option = document.createElement("option");
-            option.value = "";
-            option.textContent = "No contests available";
-            select.appendChild(option);
+        if (recentContests.length === 0) {
+            select.innerHTML = '<option value="">No contests available</option>';
         }
     } catch (err) {
-        console.error("Failed to fetch contest list from database:", err);
+        console.error("Failed to fetch contest list:", err);
         const select = document.getElementById("contestSelect");
         select.innerHTML = '<option value="">Error loading contests</option>';
     }
@@ -201,9 +198,6 @@ async function loadLatestContests() {
             });
             addLog("Deleted oldest contest to maintain 15 latest contests.");
         }
-
-        // Refresh dropdown after loading
-        await populateContestList();
     } catch (error) {
         console.error("Error loading contests:", error);
         addLog("Error loading contests. Please try again.");
@@ -226,27 +220,61 @@ async function checkRating(forcedId = null) {
     }
 
     try {
-        const res = await fetch(`${supabaseUrl}/rest/v1/contest_ratings?contest_id=eq.${contestId}&select=contest_name,rating_data`, {
+        // First, check if contest exists in database
+        const dbRes = await fetch(`${supabaseUrl}/rest/v1/contest_ratings?contest_id=eq.${contestId}&select=contest_name,rating_data`, {
             headers: {
                 apikey: supabaseKey,
                 Authorization: `Bearer ${supabaseKey}`
             }
         });
-        const data = await res.json();
+        const dbData = await dbRes.json();
 
-        if (data.length === 0) {
-            resultDiv.innerHTML = "No data found for this contest. Try loading latest contests.";
+        if (dbData.length > 0) {
+            // Contest found in database
+            const { contest_name, rating_data } = dbData[0];
+            if (rating_data.length === 0) {
+                resultDiv.innerHTML = "No rating data available for the specified users.";
+                return;
+            }
+
+            let html = `<div class="contest-title">${contest_name}</div><table><thead><tr><th>Rank</th><th>Handle</th><th>Old Rating</th><th>New Rating</th><th>Δ Change</th></tr></thead><tbody>`;
+            rating_data.forEach(change => {
+                const delta = change.newRating - change.oldRating;
+                const deltaClass = delta > 0 ? "delta-positive" : delta < 0 ? "delta-negative" : "delta-zero";
+                const sign = delta > 0 ? "+" : "";
+                html += `<tr><td>${change.rank}</td><td>${change.handle}</td><td>${change.oldRating}</td><td>${change.newRating}</td><td class="${deltaClass}">${sign}${delta}</td></tr>`;
+            });
+            html += `</tbody></table>`;
+            resultDiv.innerHTML = html;
             return;
         }
 
-        const { contest_name, rating_data } = data[0];
-        if (rating_data.length === 0) {
+        // Contest not in database, fetch from Codeforces API
+        const handles = await fetchHandlesFromDB();
+        if (handles.length === 0) {
+            resultDiv.innerHTML = "No handles found in database.";
+            return;
+        }
+
+        const ratingRes = await fetch(`https://codeforces.com/api/contest.ratingChanges?contestId=${contestId}`);
+        const ratingData = await ratingRes.json();
+        if (ratingData.status !== "OK") {
+            resultDiv.innerHTML = "Rating changes are not available for this contest yet.";
+            return;
+        }
+
+        const changes = ratingData.result.filter(entry => handles.includes(entry.handle));
+        if (changes.length === 0) {
             resultDiv.innerHTML = "No rating data available for the specified users.";
             return;
         }
 
-        let html = `<div class="contest-title">${contest_name}</div><table><thead><tr><th>Rank</th><th>Handle</th><th>Old Rating</th><th>New Rating</th><th>Δ Change</th></tr></thead><tbody>`;
-        rating_data.forEach(change => {
+        const contestRes = await fetch(`https://codeforces.com/api/contest.standings?contestId=${contestId}&from=1&count=1`);
+        const contestData = await contestRes.json();
+        const contestName = contestData.status === "OK" ? contestData.result.contest.name : `Contest ${contestId}`;
+
+        let html = `<div class="contest-title">${contestName}</div><table><thead><tr><th>Rank</th><th>Handle</th><th>Old Rating</th><th>New Rating</th><th>Δ Change</th></tr></thead><tbody>`;
+        changes.forEach(change => {
             const delta = change.newRating - change.oldRating;
             const deltaClass = delta > 0 ? "delta-positive" : delta < 0 ? "delta-negative" : "delta-zero";
             const sign = delta > 0 ? "+" : "";
