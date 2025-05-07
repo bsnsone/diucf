@@ -7,57 +7,45 @@ body {
 }
 
 /* Style for Contest Results */
-.contest-results {
-  margin-top: 30px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: grid;
-  grid-template-columns: repeat(7, 1fr); /* Create 7 equal columns */
-  gap: 10px;
-  font-family: Arial, sans-serif;
+.ratings-table-container {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
 }
 
-.contest {
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: contents; /* Allow grid item layout to work */
+.ratings-table-container table {
+  border-collapse: collapse;
+  width: 95%;
+  max-width: 1200px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.contest div {
-  padding: 5px;
+.ratings-table-container th {
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+}
+
+.ratings-table-container td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
   text-align: center;
 }
 
-.contest-number,
-.contest-rank,
-.contest-solved,
-.contest-rating-change,
-.contest-new-rating {
-  font-size: 14px;
+.ratings-table-container tr:hover {
+  background-color: #f1f1f1;
 }
 
-.contest-name {
-  font-weight: bold;
-  font-size: 16px;
-}
+.bold { font-weight: bold; }
+.gray { color: #808080; }
+.green { color: #008000; }
+.cyan { color: #03a89e; }
+.blue { color: #0000ff; }
+.violet { color: #aa00aa; }
+.orange { color: #ff8c00; }
+.red { color: #ff0000; }
 
-.contest-start-time {
-  font-size: 12px;
-  color: #777;
-}
-
-.contest-rating-change {
-  color: #007bff;
-}
-
-.contest-new-rating {
-  font-weight: bold;
-  font-size: 16px;
-}
 
 /* Style for contest header (column titles) */
 .contest-header {
