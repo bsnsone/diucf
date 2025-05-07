@@ -56,6 +56,12 @@
             text-align: center;
             padding: 20px;
         }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
         .load-button {
             background-color: #28a745;
             color: white;
@@ -63,30 +69,169 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            display: block;
-            margin: 0 auto 20px;
         }
         .load-button:hover {
             background-color: #218838;
         }
+        .load-input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100px;
+        }
         .log {
-            color: #28a745;
             font-size: 14px;
-            margin-top: 10px;
+            margin-top: 5px;
+            text-align: center;
+        }
+        .log-success {
+            color: #28a745;
+        }
+        .log-existing {
+            color: #777;
+        }
+        .log-skipped {
+            color: #d9534f;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <button class="load-button" onclick="loadLatestContests()">LOAD Latest 15 Contests</button>
+        <div class="controls">
+            <input type="number" id="contestCount" class="load-input" value="15" min="1" placeholder="Number of contests">
+            <button class="load-button" onclick="loadLatestContests()">Load</button>
+        </div>
         <div id="loadLogs"></div>
-        <h1>Handles Data</h1>
+        <h1>Handles and Contests Data</h1>
+        <h2>Handles</h2>
         <div id="handlesTable"></div>
+        <h2>Contests</h2>
+        <div id="contestsTable"></div>
     </div>
 
-    <script src="js/script.js"></script>
-    <script src="js/load.js"></script>
-    <script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // Supabase configuration
+        const supabaseUrl = 'https://your-supabase-url.supabase.co';
+        const supabaseKey = 'your-supabase-key';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Fetch handles from database
+        async function fetchHandlesFromDB() {
+            try {
+                const { data, error } = await supabase.from('handles').select('handle');
+                if (error) throw error;
+                return data.map(row => row.handle);
+            } catch (error) {
+                console.error('Error fetching handles:', error);
+                throw error;
+            }
+        }
+
+        // Check if a contest exists in the database
+        async function contestExists(contestId) {
+            const { data, error } = await supabase
+                .from('contests')
+                .select('id')
+                .eq('id', contestId)
+                .maybeSingle();
+            if (error) throw error;
+            return !!data;
+        }
+
+        // Check if a contest has associated handles
+        async function hasHandles(contestId) {
+            const { data, error } = await supabase
+                .from('contest_handles')
+                .select('handle')
+                .eq('contest_id', contestId);
+            if (error) throw error;
+            return data.length > 0;
+        }
+
+        // Insert a new contest into the database
+        async function insertContest(contest) {
+            const { error } = await supabase
+                .from('contests')
+                .insert([{ id: contest.id, name: contest.name, date: contest.date }]);
+            if (error) throw error;
+        }
+
+        // Fetch contests from an external source (placeholder)
+        async function fetchExternalContests(limit) {
+            // Replace with actual API call (e.g., Codeforces API)
+            // This is a mock response
+            const mockContests = Array.from({ length: limit }, (_, i) => ({
+                id: 1000 + i,
+                name: `Contest ${1000 + i}`,
+                date: new Date(2025, 4, 8 - i).toISOString()
+            }));
+            return mockContests;
+        }
+
+        // Load latest contests
+        async function loadLatestContests() {
+            const tableDiv = document.getElementById("contestsTable");
+            const logDiv = document.getElementById("loadLogs");
+            const countInput = document.getElementById("contestCount");
+            const limit = parseInt(countInput.value) || 15;
+
+            logDiv.innerHTML = ''; // Clear previous logs
+
+            try {
+                // Fetch external contests
+                const externalContests = await fetchExternalContests(limit);
+                const logs = [];
+                let newContestCount = 0;
+
+                // Process each contest
+                for (const contest of externalContests) {
+                    const exists = await contestExists(contest.id);
+                    if (exists) {
+                        logs.push(`<p class="log log-existing">Contest ${contest.id} (${contest.name}) already loaded.</p>`);
+                        continue;
+                    }
+
+                    const hasUsers = await hasHandles(contest.id);
+                    if (!hasUsers) {
+                        logs.push(`<p class="log log-skipped">Contest ${contest.id} (${contest.name}) skipped: no associated handles.</p>`);
+                        continue;
+                    }
+
+                    // Insert new contest
+                    await insertContest(contest);
+                    logs.push(`<p class="log log-success">Contest ${contest.id} (${contest.name}) successfully imported.</p>`);
+                    newContestCount++;
+                }
+
+                // Update contests table
+                const contests = await supabase
+                    .from('contests')
+                    .select('id, name, date')
+                    .order('date', { ascending: false })
+                    .limit(limit);
+
+                if (contests.data.length === 0) {
+                    tableDiv.innerHTML = '<p class="no-data">No contests found in the database.</p>';
+                    logDiv.innerHTML += `<p class="log">No contests loaded.</p>`;
+                } else {
+                    let html = '<table><thead><tr><th>ID</th><th>Name</th><th>Date</th></tr></thead><tbody>';
+                    contests.data.forEach(contest => {
+                        html += `<tr><td>${contest.id}</td><td>${contest.name}</td><td>${new Date(contest.date).toLocaleDateString()}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                    tableDiv.innerHTML = html;
+                    logDiv.innerHTML = logs.join('') + `<p class="log log-success">Loaded ${contests.data.length} contests (${newContestCount} new).</p>`;
+                }
+            } catch (error) {
+                console.error("Error loading contests:", error);
+                tableDiv.innerHTML = '<p class="error">Error loading contests. Please try again later.</p>';
+                logDiv.innerHTML += '<p class="error">Error loading contests.</p>';
+            }
+        }
+
+        // Load handles table
         async function loadHandles() {
             const tableDiv = document.getElementById("handlesTable");
             try {
@@ -108,6 +253,7 @@
             }
         }
 
+        // Load handles on page load
         window.onload = loadHandles;
     </script>
 </body>
