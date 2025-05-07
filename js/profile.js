@@ -97,50 +97,15 @@ function fetchProfile() {
 
       // Show the card after successful fetch
       card.style.display = 'flex';
+      
+      // Now fetch contests data
+      fetchUserContests(handle);
     })
     .catch(err => {
       console.error('Failed to load user info:', err);
       alert('Invalid handle or failed to fetch data.');
       // Ensure card remains hidden on error
       card.style.display = 'none';
-    });
-}
-
-function fetchProfile() {
-  const handle = document.getElementById('handleInput').value.trim();
-  
-  if (handle) {
-    fetchUserProfile(handle);
-    fetchUserContests(handle);
-  } else {
-    alert('Please enter a valid Codeforces handle!');
-  }
-}
-
-function fetchUserProfile(handle) {
-  const url = `https://codeforces.com/api/user.info?handles=${handle}`;
-
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 'OK') {
-        const user = data.result[0];
-        document.getElementById('avatar').src = user.avatar;
-        document.getElementById('handle-value').textContent = user.handle;
-        document.getElementById('rating-value').textContent = user.rating || 'N/A';
-        document.getElementById('rank-value').textContent = user.rank || 'N/A';
-        document.getElementById('location-value').textContent = user.location || 'N/A';
-        document.getElementById('organization-value').textContent = user.organization || 'N/A';
-        document.getElementById('friend-count-value').textContent = user.friendOfCount || 'N/A';
-        document.getElementById('max-rating-value').textContent = user.maxRating || 'N/A';
-        document.getElementById('rank-name-value').textContent = user.rank || 'N/A';
-      } else {
-        alert('Error fetching user profile!');
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching profile:', error);
-      alert('Failed to fetch profile. Please try again later.');
     });
 }
 
@@ -182,4 +147,3 @@ function displayContests(contests) {
     contestResultsContainer.appendChild(contestElement);
   });
 }
-
