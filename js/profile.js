@@ -195,3 +195,84 @@ function displayContests(contests) {
     contestResultsContainer.appendChild(contestElement);
   });
 }
+function getRatingClass(rating) {
+  if (rating >= 3000) return "legendary";
+  if (rating >= 2400) return "red";
+  if (rating >= 2100) return "orange";
+  if (rating >= 1900) return "violet";
+  if (rating >= 1600) return "blue";
+  if (rating >= 1400) return "cyan";
+  if (rating >= 1200) return "green";
+  return "gray";
+}
+
+async function fetchRatingsFromHandle(handle) {
+  const tableContainer = document.getElementById('tableContainer');
+  tableContainer.innerHTML = ''; // Clear old content
+
+  try {
+    const response = await fetch(`https://codeforces.com/api/user.rating?handle=${handle}`);
+    const result = await response.json();
+
+    if (result.status !== 'OK') {
+      tableContainer.innerHTML = `<p style="color:red;">${result.comment || 'Invalid handle'}</p>`;
+      return;
+    }
+
+    const data = result.result;
+    if (data.length === 0) {
+      tableContainer.innerHTML = '<p>No rating data available.</p>';
+      return;
+    }
+
+    let html = `
+      <table>
+        <thead>
+          <tr>
+            <th># (ID)</th>
+            <th>Contest</th>
+            <th>Start time</th>
+            <th>Rank</th>
+            <th>Rating change</th>
+            <th>New rating</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    for (let i = data.length - 1; i >= 0; i--) {
+      const item = data[i];
+      const date = new Date(item.ratingUpdateTimeSeconds * 1000);
+      date.setHours(date.getUTCHours() + 6); // UTC+6
+      const formattedTime = date.toLocaleString('en-US', {
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }) + ' UTC+6';
+
+      const ratingDiff = item.newRating - item.oldRating;
+      const diffColor = ratingDiff >= 0 ? 'green' : 'red';
+      const ratingClass = getRatingClass(item.newRating);
+
+      html += `
+        <tr>
+          <td>${i + 1} (${item.contestId})</td>
+          <td><a href="https://codeforces.com/contest/${item.contestId}" target="_blank">${item.contestName}</a></td>
+          <td>${formattedTime}</td>
+          <td>${item.rank}</td>
+          <td class="bold" style="color: ${diffColor};">${ratingDiff >= 0 ? '+' : ''}${ratingDiff}</td>
+          <td class="bold ${ratingClass}">${item.newRating}</td>
+        </tr>
+      `;
+    }
+
+    html += `</tbody></table>`;
+    tableContainer.innerHTML = html;
+  } catch (err) {
+    tableContainer.innerHTML = '<p style="color:red;">Error fetching data.</p>';
+  }
+}
+
