@@ -75,20 +75,31 @@ function toggleMode() {
 
 async function populateContestList() {
     try {
-        const res = await fetch("https://codeforces.com/api/contest.list?gym=false");
-        const data = await res.json();
-        if (data.status !== "OK") return;
-        const recentContests = data.result.filter(c => c.phase === "FINISHED").slice(0, 30);
+        const res = await fetch(`${supabaseUrl}/rest/v1/contest_ratings?select=contest_id,contest_name&order=created_at.desc`, {
+            headers: {
+                apikey: supabaseKey,
+                Authorization: `Bearer ${supabaseKey}`
+            }
+        });
+        const contests = await res.json();
         const select = document.getElementById("contestSelect");
         select.innerHTML = "";
-        recentContests.forEach(contest => {
+        contests.forEach(contest => {
             const option = document.createElement("option");
-            option.value = contest.id;
-            option.textContent = contest.name;
+            option.value = contest.contest_id;
+            option.textContent = contest.contest_name;
             select.appendChild(option);
         });
+        if (contests.length === 0) {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "No contests available";
+            select.appendChild(option);
+        }
     } catch (err) {
-        console.error("Failed to fetch contest list", err);
+        console.error("Failed to fetch contest list from database:", err);
+        const select = document.getElementById("contestSelect");
+        select.innerHTML = '<option value="">Error loading contests</option>';
     }
 }
 
@@ -129,7 +140,12 @@ async function loadLatestContests() {
         const existingContests = await existingContestsRes.json();
         const existingContestIds = existingContests.map(c => c.contest_id);
 
+        // Process each contest exactly once
+        const processedContests = new Set();
         for (const contest of recentContests) {
+            if (processedContests.has(contest.id)) continue;
+            processedContests.add(contest.id);
+
             if (!existingContestIds.includes(contest.id)) {
                 // Fetch rating changes for handles
                 const ratingRes = await fetch(`https://codeforces.com/api/contest.ratingChanges?contestId=${contest.id}`);
@@ -185,6 +201,9 @@ async function loadLatestContests() {
             });
             addLog("Deleted oldest contest to maintain 15 latest contests.");
         }
+
+        // Refresh dropdown after loading
+        await populateContestList();
     } catch (error) {
         console.error("Error loading contests:", error);
         addLog("Error loading contests. Please try again.");
