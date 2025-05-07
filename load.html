@@ -93,6 +93,10 @@
         .log-skipped {
             color: #d9534f;
         }
+        .log-processing {
+            color: #007bff;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -177,13 +181,17 @@
             const countInput = document.getElementById("contestCount");
             const limit = parseInt(countInput.value) || 15;
 
-            logDiv.innerHTML = ''; // Clear previous logs
+            // Show processing message
+            logDiv.innerHTML = '<p class="log log-processing">Processing...</p>';
 
             try {
                 // Fetch external contests
                 const externalContests = await fetchExternalContests(limit);
                 const logs = [];
                 let newContestCount = 0;
+
+                // Clear processing message and start logging
+                logDiv.innerHTML = '';
 
                 // Process each contest
                 for (const contest of externalContests) {
@@ -227,7 +235,7 @@
             } catch (error) {
                 console.error("Error loading contests:", error);
                 tableDiv.innerHTML = '<p class="error">Error loading contests. Please try again later.</p>';
-                logDiv.innerHTML += '<p class="error">Error loading contests.</p>';
+                logDiv.innerHTML = '<p class="error">Error loading contests.</p>';
             }
         }
 
