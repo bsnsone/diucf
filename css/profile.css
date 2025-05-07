@@ -6,9 +6,21 @@ body {
   text-align: center;
 }
 
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 /* Style for Contest Results */
 .ratings-table-container {
-  margin-top: 40px;
+  margin-top: 20px;
   display: flex;
   justify-content: center;
 }
@@ -16,7 +28,7 @@ body {
 .ratings-table-container table {
   border-collapse: collapse;
   width: 95%;
-  max-width: 1200px;
+  max-width: 600px;
   background-color: white;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
@@ -45,22 +57,7 @@ body {
 .violet { color: #aa00aa; }
 .orange { color: #ff8c00; }
 .red { color: #ff0000; }
-
-
-/* Style for contest header (column titles) */
-.contest-header {
-  display: flex;
-  font-weight: bold;
-  background-color: #f0f0f0;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.contest-header-item {
-  flex: 1;
-  text-align: center;
-  padding: 5px;
-}
+.legendary { color: #880000; }
 
 /* Style for Input Group */
 .input-group {
@@ -95,9 +92,14 @@ body {
   background-color: #0055aa;
 }
 
+.input-group button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
 /* Style for Profile Card */
 .card {
-  display: none; /* Hide card by default */
+  display: none;
   background-color: white;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -119,8 +121,8 @@ body {
   border-radius: 5px;
   width: 120px;
   height: 120px;
-  object-fit: cover; /* Ensure image fits the box without distortion */
-  object-position: center; /* Center the image */
+  object-fit: cover;
+  object-position: center;
 }
 
 .card .right {
@@ -130,27 +132,25 @@ body {
 
 .card .right h2 {
   margin: 0 0 10px 0;
-  font-weight: normal; /* Ensure h2 is not bold by default */
+  font-weight: normal;
 }
 
-/* Ensure labels are not bold */
 .label {
   font-weight: normal;
 }
 
 /* Rank colors for specific elements */
-.rank-color-newbie { color: #999999; } /* darker gray */
-.rank-color-pupil { color: #16b316; } /* dark green */
-.rank-color-specialist { color: #1a98a6; } /* darker cyan-blue */
-.rank-color-expert { color: #0000ff; } /* darker blue */
-.rank-color-candidate-master { color: #b925b9; } /* darker purple */
-.rank-color-master { color: #ffab03; } /* darker orange */
-.rank-color-international-master { color: #ff9900; } /* darker red-orange */
-.rank-color-grandmaster { color: #CC2222; } /* darker red */
-.rank-color-international-grandmaster { color: #CC0000; } /* darker deep red */
-.rank-color-legendary-grandmaster { color: #880000; } /* darker dark red */
+.rank-color-newbie { color: #999999; }
+.rank-color-pupil { color: #16b316; }
+.rank-color-specialist { color: #1a98a6; }
+.rank-color-expert { color: #0000ff; }
+.rank-color-candidate-master { color: #b925b9; }
+.rank-color-master { color: #ffab03; }
+.rank-color-international-master { color: #ff9900; }
+.rank-color-grandmaster { color: #CC2222; }
+.rank-color-international-grandmaster { color: #CC0000; }
+.rank-color-legendary-grandmaster { color: #880000; }
 
-/* Rank classes: make them bold when rank class is added */
 span.rank-color-newbie,
 span.rank-color-pupil,
 span.rank-color-specialist,
@@ -174,10 +174,15 @@ span.rank-color-legendary-grandmaster {
   .input-group input, .input-group button {
     width: 100%;
     border-radius: 6px;
+    margin-bottom: 10px;
   }
 
   .card {
     width: 100%;
     max-width: 100%;
+  }
+
+  .ratings-table-container table {
+    width: 100%;
   }
 }
