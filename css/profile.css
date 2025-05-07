@@ -1,3 +1,4 @@
+/* General styling */
 body {
   font-family: 'Segoe UI', sans-serif;
   background: #f2f2f2;
@@ -5,6 +6,36 @@ body {
   text-align: center;
 }
 
+/* Style for Contest Results */
+.contest-results {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.contest {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.contest h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.contest p {
+  margin: 5px 0;
+  font-size: 16px;
+  color: #666;
+}
+
+/* Style for Input Group */
 .input-group {
   display: flex;
   justify-content: center;
@@ -37,6 +68,7 @@ body {
   background-color: #0055aa;
 }
 
+/* Style for Profile Card */
 .card {
   display: none; /* Hide card by default */
   background-color: white;
@@ -45,6 +77,7 @@ body {
   max-width: 600px;
   margin: 0 auto;
   overflow: hidden;
+  text-align: left;
 }
 
 .card .left {
@@ -65,7 +98,6 @@ body {
 
 .card .right {
   padding: 20px;
-  text-align: left;
   flex: 1;
 }
 
@@ -79,13 +111,6 @@ body {
   font-weight: normal;
 }
 
-/* Make handle-value, rating-value, rank-value, max-rating-value, and rank-name-value bold when they have a rank-color class */
-span.rank-color-newbie, span.rank-color-pupil, span.rank-color-specialist, span.rank-color-expert,
-span.rank-color-candidate-master, span.rank-color-master, span.rank-color-international-master,
-span.rank-color-grandmaster, span.rank-color-international-grandmaster, span.rank-color-legendary-grandmaster {
-  font-weight: bold;
-}
-
 /* Rank colors for specific elements */
 .rank-color-newbie { color: #999999; } /* darker gray */
 .rank-color-pupil { color: #16b316; } /* dark green */
@@ -97,3 +122,35 @@ span.rank-color-grandmaster, span.rank-color-international-grandmaster, span.ran
 .rank-color-grandmaster { color: #CC2222; } /* darker red */
 .rank-color-international-grandmaster { color: #CC0000; } /* darker deep red */
 .rank-color-legendary-grandmaster { color: #880000; } /* darker dark red */
+
+/* Rank classes: make them bold when rank class is added */
+span.rank-color-newbie,
+span.rank-color-pupil,
+span.rank-color-specialist,
+span.rank-color-expert,
+span.rank-color-candidate-master,
+span.rank-color-master,
+span.rank-color-international-master,
+span.rank-color-grandmaster,
+span.rank-color-international-grandmaster,
+span.rank-color-legendary-grandmaster {
+  font-weight: bold;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .input-group {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .input-group input, .input-group button {
+    width: 100%;
+    border-radius: 6px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 100%;
+  }
+}
