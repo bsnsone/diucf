@@ -35,10 +35,24 @@ function resetCardClasses() {
   elements.forEach(elem => elem.className = '');
 }
 
+function showError(message) {
+  const errorDiv = document.getElementById('error-message');
+  errorDiv.textContent = message;
+  errorDiv.style.display = 'block';
+}
+
+function clearError() {
+  const errorDiv = document.getElementById('error-message');
+  errorDiv.textContent = '';
+  errorDiv.style.display = 'none';
+}
+
 function fetchProfile() {
   const handle = document.getElementById('handleInput').value.trim();
   if (!handle) {
-    alert('Please enter a valid Codeforces handle.');
+    showError('Please enter a valid Codeforces handle.');
+    document.getElementById('profile-card').style.display = 'none';
+    document.getElementById('tableContainer').innerHTML = '';
     return;
   }
 
@@ -46,6 +60,7 @@ function fetchProfile() {
   const button = document.querySelector('.input-group button');
   button.disabled = true;
   button.textContent = 'Loading...';
+  clearError();
 
   fetch(`https://codeforces.com/api/user.info?handles=${handle}`)
     .then(res => {
@@ -96,11 +111,11 @@ function fetchProfile() {
       }
 
       card.style.display = 'flex';
-      fetchRatingsFromHandle(handle); // Fetch contest history
+      fetchRatingsFromHandle(handle);
     })
     .catch(err => {
       console.error('Failed to load user info:', err);
-      alert(err.message);
+      showError(err.message);
       document.getElementById('handleInput').value = '';
       card.style.display = 'none';
       document.getElementById('tableContainer').innerHTML = '';
