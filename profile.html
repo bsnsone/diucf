@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Codeforces Profile Card</title>
-  <link rel="icon" href="https://imransihab0.github.io/amar_ami/is.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="https://via.placeholder.com/32" type="image/png" sizes="32x32">
   <link rel="stylesheet" href="css/profile.css">
 </head>
 <body>
   <div class="input-group">
+    <label for="handleInput" class="sr-only">Enter Codeforces handle</label>
     <input type="text" id="handleInput" placeholder="Enter Codeforces handle (e.g., imransihab0)" onkeypress="handleKey(event)">
-    <button onclick="fetchProfile()">View</button>
+    <button onclick="fetchProfile()" aria-label="Fetch Profile">View</button>
   </div>
 
   <div class="card" id="profile-card">
@@ -26,9 +27,7 @@
     </div>
   </div>
 
-  <!-- Contest Results Section -->
-      <div id="tableContainer" class="ratings-table-container"></div>
-  <!-- Contest results will be displayed here -->
+  <div id="tableContainer" class="ratings-table-container"></div>
 
   <script src="js/profile.js"></script>
 </body>
