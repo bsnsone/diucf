@@ -105,3 +105,81 @@ function fetchProfile() {
       card.style.display = 'none';
     });
 }
+
+function fetchProfile() {
+  const handle = document.getElementById('handleInput').value.trim();
+  
+  if (handle) {
+    fetchUserProfile(handle);
+    fetchUserContests(handle);
+  } else {
+    alert('Please enter a valid Codeforces handle!');
+  }
+}
+
+function fetchUserProfile(handle) {
+  const url = `https://codeforces.com/api/user.info?handles=${handle}`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'OK') {
+        const user = data.result[0];
+        document.getElementById('avatar').src = user.avatar;
+        document.getElementById('handle-value').textContent = user.handle;
+        document.getElementById('rating-value').textContent = user.rating || 'N/A';
+        document.getElementById('rank-value').textContent = user.rank || 'N/A';
+        document.getElementById('location-value').textContent = user.location || 'N/A';
+        document.getElementById('organization-value').textContent = user.organization || 'N/A';
+        document.getElementById('friend-count-value').textContent = user.friendOfCount || 'N/A';
+        document.getElementById('max-rating-value').textContent = user.maxRating || 'N/A';
+        document.getElementById('rank-name-value').textContent = user.rank || 'N/A';
+      } else {
+        alert('Error fetching user profile!');
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching profile:', error);
+      alert('Failed to fetch profile. Please try again later.');
+    });
+}
+
+function fetchUserContests(handle) {
+  const url = `https://codeforces.com/api/user.rating?handle=${handle}`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'OK') {
+        displayContests(data.result);
+      } else {
+        document.getElementById('contestResults').innerHTML = '<p>No contests found for this user.</p>';
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching contests:', error);
+      document.getElementById('contestResults').innerHTML = '<p>Failed to fetch contests. Please try again later.</p>';
+    });
+}
+
+function displayContests(contests) {
+  const contestResultsContainer = document.getElementById('contestResults');
+  contestResultsContainer.innerHTML = ''; // Clear previous results
+
+  contests.forEach(contest => {
+    const contestElement = document.createElement('div');
+    contestElement.classList.add('contest');
+
+    const contestTitle = document.createElement('h3');
+    contestTitle.textContent = `Contest ID: ${contest.contestId}`;
+    
+    const contestDetails = document.createElement('p');
+    contestDetails.textContent = `Rank: ${contest.rank} | Rating: ${contest.newRating} (Change: ${contest.newRating - contest.oldRating})`;
+
+    contestElement.appendChild(contestTitle);
+    contestElement.appendChild(contestDetails);
+    
+    contestResultsContainer.appendChild(contestElement);
+  });
+}
+
