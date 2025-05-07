@@ -145,31 +145,35 @@ function displayContests(contests) {
     contestName.classList.add('contest-name');
     contestName.textContent = contest.contestName;
 
-    // Create start time (formatting with date)
+    // Create start time (handling invalid or missing dates)
     const startTime = document.createElement('div');
     startTime.classList.add('contest-start-time');
-    const startDate = new Date(contest.startTime * 1000);
-    startTime.textContent = startDate.toLocaleString(); // Adjust for your timezone
+    if (contest.startTime && !isNaN(contest.startTime)) {
+      const startDate = new Date(contest.startTime * 1000); // Convert from Unix timestamp (seconds)
+      startTime.textContent = startDate.toLocaleString(); // Adjust for your timezone
+    } else {
+      startTime.textContent = 'N/A'; // Placeholder if start time is invalid
+    }
 
     // Create rank
     const rank = document.createElement('div');
     rank.classList.add('contest-rank');
-    rank.textContent = contest.rank;
+    rank.textContent = contest.rank ?? 'N/A'; // Show 'N/A' if rank is undefined
 
     // Create solved problems
     const solved = document.createElement('div');
     solved.classList.add('contest-solved');
-    solved.textContent = contest.solved;
+    solved.textContent = contest.solved ?? 'N/A'; // Show 'N/A' if solved is undefined
 
     // Create rating change
     const ratingChange = document.createElement('div');
     ratingChange.classList.add('contest-rating-change');
-    ratingChange.textContent = `${contest.ratingChange >= 0 ? '+' : ''}${contest.ratingChange}`;
+    ratingChange.textContent = contest.ratingChange ? `${contest.ratingChange >= 0 ? '+' : ''}${contest.ratingChange}` : 'N/A'; // Show 'N/A' if rating change is undefined
 
     // Create new rating
     const newRating = document.createElement('div');
     newRating.classList.add('contest-new-rating');
-    newRating.textContent = contest.newRating;
+    newRating.textContent = contest.newRating ?? 'N/A'; // Show 'N/A' if new rating is undefined
 
     // Append all elements to contestElement
     contestElement.appendChild(contestNumber);
@@ -179,7 +183,8 @@ function displayContests(contests) {
     contestElement.appendChild(solved);
     contestElement.appendChild(ratingChange);
     contestElement.appendChild(newRating);
-    
+
     contestResultsContainer.appendChild(contestElement);
   });
 }
+
