@@ -7,32 +7,80 @@ body {
 }
 
 /* Style for Contest Results */
+/* Style for Contest Results */
 .contest-results {
   margin-top: 30px;
   padding: 20px;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); /* Create 7 equal columns */
+  gap: 10px;
+  font-family: Arial, sans-serif;
 }
 
 .contest {
   background-color: #fff;
   border-radius: 8px;
   padding: 15px;
-  margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: contents; /* Allow grid item layout to work */
 }
 
-.contest h3 {
-  margin: 0;
-  font-size: 18px;
-  color: #333;
+.contest div {
+  padding: 5px;
+  text-align: center;
 }
 
-.contest p {
-  margin: 5px 0;
+.contest-number,
+.contest-rank,
+.contest-solved,
+.contest-rating-change,
+.contest-new-rating {
+  font-size: 14px;
+}
+
+.contest-name {
+  font-weight: bold;
   font-size: 16px;
-  color: #666;
+}
+
+.contest-start-time {
+  font-size: 12px;
+  color: #777;
+}
+
+.contest-rating-change {
+  color: #007bff;
+}
+
+.contest-new-rating {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Style for columns headers */
+.contest-results::before {
+  content: "Contest";
+  grid-column: 1 / 2;
+  font-weight: bold;
+  text-align: center;
+}
+
+.contest-results::after {
+  content: "Start Time";
+  grid-column: 2 / 3;
+  font-weight: bold;
+  text-align: center;
+}
+
+.contest-results div:nth-child(3) {
+  content: "Rank";
+}
+
+.contest-results div:nth-child(4) {
+  content: "Solved";
 }
 
 /* Style for Input Group */
