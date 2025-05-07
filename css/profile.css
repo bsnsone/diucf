@@ -18,6 +18,18 @@ body {
   border: 0;
 }
 
+/* Error message */
+.error-message {
+  display: none;
+  color: #d32f2f;
+  font-size: 14px;
+  margin-top: 10px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
 /* Style for Contest Results */
 .ratings-table-container {
   margin-top: 20px;
@@ -64,7 +76,7 @@ body {
   display: flex;
   justify-content: center;
   width: 600px;
-  margin: 0 auto 30px auto;
+  margin: 0 auto 10px auto;
 }
 
 .input-group input {
@@ -175,6 +187,11 @@ span.rank-color-legendary-grandmaster {
     width: 100%;
     border-radius: 6px;
     margin-bottom: 10px;
+  }
+
+  .error-message {
+    width: 100%;
+    text-align: center;
   }
 
   .card {
