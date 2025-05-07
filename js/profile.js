@@ -130,54 +130,62 @@ function fetchUserContests(handle) {
 function displayContests(contests) {
   const contestResultsContainer = document.getElementById('contestResults');
   contestResultsContainer.innerHTML = ''; // Clear previous results
+  
+  // Create the header row for the column titles
+  const headerRow = document.createElement('div');
+  headerRow.classList.add('contest-header');
+
+  const columns = ['Contest', 'Start Time', 'Rank', 'Solved', 'Rating Change', 'New Rating'];
+  columns.forEach(col => {
+    const column = document.createElement('div');
+    column.classList.add('contest-header-item');
+    column.textContent = col;
+    headerRow.appendChild(column);
+  });
+
+  contestResultsContainer.appendChild(headerRow);
 
   contests.forEach(contest => {
     const contestElement = document.createElement('div');
     contestElement.classList.add('contest');
 
-    // Create contest number
+    // Contest number (ID)
     const contestNumber = document.createElement('div');
-    contestNumber.classList.add('contest-number');
-    contestNumber.textContent = contest.contestId;
+    contestNumber.classList.add('contest-item');
+    contestNumber.textContent = contest.contestId ?? 'N/A';
 
-    // Create contest name
-    const contestName = document.createElement('div');
-    contestName.classList.add('contest-name');
-    contestName.textContent = contest.contestName;
-
-    // Create start time (handling invalid or missing dates)
+    // Start time (handle possible invalid date)
     const startTime = document.createElement('div');
-    startTime.classList.add('contest-start-time');
+    startTime.classList.add('contest-item');
     if (contest.startTime && !isNaN(contest.startTime)) {
       const startDate = new Date(contest.startTime * 1000); // Convert from Unix timestamp (seconds)
-      startTime.textContent = startDate.toLocaleString(); // Adjust for your timezone
+      startTime.textContent = startDate.toLocaleString(); // Format to local date string
     } else {
       startTime.textContent = 'N/A'; // Placeholder if start time is invalid
     }
 
-    // Create rank
+    // Rank
     const rank = document.createElement('div');
-    rank.classList.add('contest-rank');
-    rank.textContent = contest.rank ?? 'N/A'; // Show 'N/A' if rank is undefined
+    rank.classList.add('contest-item');
+    rank.textContent = contest.rank ?? 'N/A';
 
-    // Create solved problems
+    // Solved problems
     const solved = document.createElement('div');
-    solved.classList.add('contest-solved');
-    solved.textContent = contest.solved ?? 'N/A'; // Show 'N/A' if solved is undefined
+    solved.classList.add('contest-item');
+    solved.textContent = contest.solved ?? 'N/A';
 
-    // Create rating change
+    // Rating change
     const ratingChange = document.createElement('div');
-    ratingChange.classList.add('contest-rating-change');
-    ratingChange.textContent = contest.ratingChange ? `${contest.ratingChange >= 0 ? '+' : ''}${contest.ratingChange}` : 'N/A'; // Show 'N/A' if rating change is undefined
+    ratingChange.classList.add('contest-item');
+    ratingChange.textContent = contest.ratingChange !== undefined ? `${contest.ratingChange >= 0 ? '+' : ''}${contest.ratingChange}` : 'N/A';
 
-    // Create new rating
+    // New rating
     const newRating = document.createElement('div');
-    newRating.classList.add('contest-new-rating');
-    newRating.textContent = contest.newRating ?? 'N/A'; // Show 'N/A' if new rating is undefined
+    newRating.classList.add('contest-item');
+    newRating.textContent = contest.newRating ?? 'N/A';
 
     // Append all elements to contestElement
     contestElement.appendChild(contestNumber);
-    contestElement.appendChild(contestName);
     contestElement.appendChild(startTime);
     contestElement.appendChild(rank);
     contestElement.appendChild(solved);
@@ -187,4 +195,3 @@ function displayContests(contests) {
     contestResultsContainer.appendChild(contestElement);
   });
 }
-
