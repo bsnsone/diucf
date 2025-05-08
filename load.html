@@ -1,294 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handles Data</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            width: 100%;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        .no-data {
-            text-align: center;
-            color: #777;
-            padding: 20px;
-        }
-        .error {
-            color: #d9534f;
-            text-align: center;
-            padding: 20px;
-        }
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
-        }
-        .load-button {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .load-button:hover {
-            background-color: #218838;
-        }
-        .load-input {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 100px;
-        }
-        .log {
-            font-size: 14px;
-            margin-top: 5px;
-            text-align: center;
-        }
-        .log-success {
-            color: #28a745;
-        }
-        .log-existing {
-            color: #777;
-        }
-        .log-skipped {
-            color: #d9534f;
-        }
-        .log-processing {
-            color: #007bff;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Fetch & Store Codeforces Ratings</title>
+  <link rel="icon" href="https://imransihab0.github.io/amar_ami/is.png">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input, button { padding: 10px; font-size: 16px; }
+    #logs {
+      margin-top: 20px;
+      background: #f2f2f2;
+      padding: 10px;
+      border-radius: 5px;
+      white-space: pre-line;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="controls">
-            <input type="number" id="contestCount" class="load-input" value="15" min="1" placeholder="Number of contests">
-            <button class="load-button" id="loadButton">Load</button>
-        </div>
-        <div id="loadLogs"></div>
-        <h1>Handles and Contests Data</h1>
-        <h2>Handles</h2>
-        <div id="handlesTable"></div>
-        <h2>Contests</h2>
-        <div id="contestsTable"></div>
-    </div>
 
-    <script type="module">
-        import { fetchHandlesFromDB } from './js/script.js';
+  <h2>Codeforces Contest Ratings Fetcher</h2>
+  <input type="number" id="contestCount" placeholder="Enter number of contests" />
+  <button onclick="startFetching()">Fetch & Store</button>
 
-        // Supabase configuration (same as script.js)
-        const supabaseUrl = "https://yvcxjijotyiyvwhcgcrh.supabase.co";
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2Y3hqaWpvdHlpeXZ3aGNnY3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0ODk0OTAsImV4cCI6MjA2MjA2NTQ5MH0.Xk16aqTZZyiNUoFYmXgb6PauNxTZ-PwrOfH-6bvzl-U";
+  <div id="logs"></div>
 
-        // Check if a contest exists in the database
-        async function contestExists(contestId) {
-            try {
-                const res = await fetch(`${supabaseUrl}/rest/v1/contests?id=eq.${contestId}`, {
-                    headers: {
-                        apikey: supabaseKey,
-                        Authorization: `Bearer ${supabaseKey}`,
-                    }
-                });
-                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-                const data = await res.json();
-                return data.length > 0;
-            } catch (err) {
-                console.error("Error checking contest existence:", err);
-                throw err;
-            }
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    // 🔐 Your Supabase credentials
+    const supabaseUrl = 'https://yvcxjijotyiyvwhcgcrh.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2Y3hqaWpvdHlpeXZ3aGNnY3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0ODk0OTAsImV4cCI6MjA2MjA2NTQ5MH0.Xk16aqTZZyiNUoFYmXgb6PauNxTZ-PwrOfH-6bvzl-U';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const logBox = document.getElementById('logs');
+    const log = (msg) => logBox.textContent += msg + '\n';
+
+    async function startFetching() {
+      const count = parseInt(document.getElementById('contestCount').value);
+      if (!count || count < 1) return alert('Enter a valid number.');
+
+      logBox.textContent = 'Starting fetch process...\n';
+
+      // ✅ Get handles
+      const { data: handlesData, error: handlesError } = await supabase.from('handles').select('handle');
+      if (handlesError) return log('❌ Error fetching handles: ' + handlesError.message);
+      const handles = handlesData.map(h => h.handle);
+      log(`✅ Fetched ${handles.length} handles.`);
+
+      // ✅ Get contest list
+      const contestsRes = await fetch('https://codeforces.com/api/contest.list');
+      const contestsJson = await contestsRes.json();
+      if (contestsJson.status !== 'OK') return log('❌ Error fetching contest list.');
+
+      const latestContests = contestsJson.result.filter(c => c.phase === 'FINISHED').slice(0, count);
+      log(`✅ Fetched latest ${latestContests.length} contests.`);
+
+      for (const contest of latestContests) {
+        log(`\n🔄 Contest: ${contest.id} - ${contest.name}`);
+
+        // ❌ Check if contest already exists
+        const { data: existing, error: checkError } = await supabase
+          .from('contest_ratings')
+          .select('id')
+          .eq('contest_id', contest.id)
+          .maybeSingle();
+
+        if (checkError) {
+          log(`⚠️ DB check error for contest ${contest.id}: ${checkError.message}`);
+          continue;
         }
 
-        // Check if a contest has associated handles
-        async function hasHandles(contestId) {
-            try {
-                const handles = await fetchHandlesFromDB();
-                const res = await fetch(`${supabaseUrl}/rest/v1/contest_ratings?contest_id=eq.${contestId}&select=rating_data`, {
-                    headers: {
-                        apikey: supabaseKey,
-                        Authorization: `Bearer ${supabaseKey}`,
-                    }
-                });
-                if (!res.ok) return false;
-                const data = await res.json();
-                return data.length > 0 && data[0]?.rating_data?.some(entry => handles.includes(entry.handle)) || false;
-            } catch (err) {
-                console.error("Error checking handles:", err);
-                return false;
-            }
+        if (existing) {
+          log(`⏭️ Contest ${contest.id} already in DB. Skipping.`);
+          continue;
         }
 
-        // Insert a new contest into the database
-        async function insertContest(contest) {
-            try {
-                const res = await fetch(`${supabaseUrl}/rest/v1/contests`, {
-                    method: "POST",
-                    headers: {
-                        apikey: supabaseKey,
-                        Authorization: `Bearer ${supabaseKey}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        id: contest.id,
-                        name: contest.name,
-                        date: new Date(contest.startTimeSeconds * 1000).toISOString(),
-                    })
-                });
-                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-            } catch (err) {
-                console.error("Error inserting contest:", err);
-                throw err;
-            }
+        // ✅ Fetch rating changes
+        const ratingRes = await fetch(`https://codeforces.com/api/contest.ratingChanges?contestId=${contest.id}`);
+        const ratingJson = await ratingRes.json();
+        if (ratingJson.status !== 'OK') {
+          log(`⚠️ No rating data for contest ${contest.id}`);
+          continue;
         }
 
-        // Fetch contests from Codeforces API
-        async function fetchExternalContests(limit) {
-            try {
-                const res = await fetch("https://codeforces.com/api/contest.list?gym=false");
-                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-                const data = await res.json();
-                if (data.status !== "OK") {
-                    throw new Error("Failed to fetch contest list");
-                }
-                return data.result
-                    .filter(c => c.phase === "FINISHED")
-                    .slice(0, limit)
-                    .map(c => ({
-                        id: c.id,
-                        name: c.name,
-                        startTimeSeconds: c.startTimeSeconds
-                    }));
-            } catch (err) {
-                console.error("Failed to fetch contests:", err);
-                throw err;
-            }
+        // ✅ Filter only relevant handles
+        const relevantRatings = ratingJson.result.filter(r => handles.includes(r.handle));
+        log(`➡️ Found ${relevantRatings.length} relevant ratings.`);
+
+        // ✅ Store in Supabase
+        const { error } = await supabase.from('contest_ratings').insert([{
+          contest_id: contest.id,
+          contest_name: contest.name,
+          rating_data: relevantRatings,
+        }]);
+
+        if (error) {
+          log(`❌ Error saving to DB: ${error.message}`);
+        } else {
+          log(`✅ Stored contest ${contest.id} in DB.`);
         }
+      }
 
-        // Load latest contests
-        async function loadLatestContests() {
-            const tableDiv = document.getElementById("contestsTable");
-            const logDiv = document.getElementById("loadLogs");
-            const countInput = document.getElementById("contestCount");
-            const limit = parseInt(countInput.value) || 15;
+      log('\n🎉 All done!');
+    }
+  </script>
 
-            logDiv.innerHTML = '<p class="log log-processing">Processing...</p>';
-
-            try {
-                const externalContests = await fetchExternalContests(limit);
-                const logs = [];
-                let newContestCount = 0;
-
-                logDiv.innerHTML = '';
-
-                for (const contest of externalContests) {
-                    const exists = await contestExists(contest.id);
-                    if (exists) {
-                        logs.push(`<p class="log log-existing">Contest ${contest.id} (${contest.name}) already loaded.</p>`);
-                        continue;
-                    }
-
-                    const hasUsers = await hasHandles(contest.id);
-                    if (!hasUsers) {
-                        logs.push(`<p class="log log-skipped">Contest ${contest.id} (${contest.name}) skipped: no associated handles.</p>`);
-                        continue;
-                    }
-
-                    await insertContest(contest);
-                    logs.push(`<p class="log log-success">Contest ${contest.id} (${contest.name}) successfully imported.</p>`);
-                    newContestCount++;
-                }
-
-                const res = await fetch(`${supabaseUrl}/rest/v1/contests?select=id,name,date&order=date.desc&limit=${limit}`, {
-                    headers: {
-                        apikey: supabaseKey,
-                        Authorization: `Bearer ${supabaseKey}`,
-                    }
-                });
-                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-                const contests = await res.json();
-
-                if (contests.length === 0) {
-                    tableDiv.innerHTML = '<p class="no-data">No contests found in the database.</p>';
-                    logDiv.innerHTML = logs.join('') + `<p class="log">No contests loaded.</p>`;
-                } else {
-                    let html = '<table><thead><tr><th>ID</th><th>Name</th><th>Date</th></tr></thead><tbody>';
-                    contests.forEach(contest => {
-                        html += `<tr><td>${contest.id}</td><td>${contest.name}</td><td>${new Date(contest.date).toLocaleDateString()}</td></tr>`;
-                    });
-                    html += '</tbody></table>';
-                    tableDiv.innerHTML = html;
-                    logDiv.innerHTML = logs.join('') + `<p class="log log-success">Loaded ${contests.length} contests (${newContestCount} new).</p>`;
-                }
-            } catch (error) {
-                console.error("Error loading contests:", error);
-                logDiv.innerHTML = '<p class="error">Error loading contests: ' + error.message + '</p>';
-                tableDiv.innerHTML = '<p class="error">Error loading contests. Please try again later.</p>';
-            }
-        }
-
-        // Load handles table
-        async function loadHandles() {
-            const tableDiv = document.getElementById("handlesTable");
-            try {
-                const handles = await fetchHandlesFromDB();
-                if (handles.length === 0) {
-                    tableDiv.innerHTML = '<p class="no-data">No handles found in the database.</p>';
-                    return;
-                }
-
-                let html = '<table><thead><tr><th>Handle</th></tr></thead><tbody>';
-                handles.forEach(handle => {
-                    html += `<tr><td>${handle}</td></tr>`;
-                });
-                html += '</tbody></table>';
-                tableDiv.innerHTML = html;
-            } catch (error) {
-                console.error("Error loading handles:", error);
-                tableDiv.innerHTML = '<p class="error">Error loading handles: ' + error.message + '</p>';
-            }
-        }
-
-        // Initialize
-        window.onload = loadHandles;
-        document.getElementById("loadButton").addEventListener("click", loadLatestContests);
-    </script>
 </body>
 </html>
