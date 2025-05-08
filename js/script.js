@@ -38,6 +38,7 @@ async function addHandle() {
 
         document.getElementById("newHandle").value = "";
         alert("Handle added!");
+        await renderHandleList();
     } catch (error) {
         console.error("Error adding handle:", error);
         alert("An error occurred while adding the handle. Please try again.");
@@ -59,6 +60,7 @@ async function removeHandle() {
         if (res.ok) {
             alert("Handle removed!");
             document.getElementById("newHandle").value = "";
+            await renderHandleList();
         } else {
             alert("Failed to remove handle.");
         }
