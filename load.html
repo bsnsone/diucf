@@ -54,6 +54,7 @@
       logBox.innerHTML = '';
     };
 
+    // Function to fetch and store contest ratings
     async function startFetching() {
       const count = parseInt(document.getElementById('contestCount').value);
       if (!count || count < 1) return alert('Enter a valid number.');
@@ -116,6 +117,71 @@
       }
 
       log('🎉 Done fetching and storing all contest ratings.', 'success');
+    }
+
+    // Function to update contest ratings for new handles
+    async function updateContestRatingsForNewHandles() {
+      // Fetch new handles from the database
+      const { data: handlesData, error: handlesError } = await supabase.from('handles').select('handle');
+      if (handlesError) return log('❌ Error fetching handles: ' + handlesError.message, 'error');
+      const handles = handlesData.map(h => h.handle);
+      log(`✅ Fetched ${handles.length} handles.`, 'success');
+
+      // Fetch contest list again
+      const contestsRes = await fetch('https://codeforces.com/api/contest.list');
+      const contestsJson = await contestsRes.json();
+      if (contestsJson.status !== 'OK') return log('❌ Error fetching contest list.', 'error');
+
+      const latestContests = contestsJson.result.filter(c => c.phase === 'FINISHED');
+      log(`✅ Fetched latest ${latestContests.length} contests.`, 'success');
+
+      // Loop through each contest and check for new ratings
+      for (const contest of latestContests) {
+        log(`🔄 Contest: ${contest.id} - ${contest.name}`, 'info');
+
+        const { data: existing, error: checkError } = await supabase
+          .from('contest_ratings')
+          .select('id')
+          .eq('contest_id', contest.id)
+          .maybeSingle();
+
+        if (checkError) {
+          log(`⚠️ DB check error: ${checkError.message}`, 'warn');
+          continue;
+        }
+
+        if (existing) {
+          log(`⏭️ Contest ${contest.id} already in DB. Skipping.`, 'warn');
+          continue;
+        }
+
+        // Fetch the rating changes for this contest
+        const ratingRes = await fetch(`https://codeforces.com/api/contest.ratingChanges?contestId=${contest.id}`);
+        const ratingJson = await ratingRes.json();
+        if (ratingJson.status !== 'OK') {
+          log(`⚠️ No rating data for contest ${contest.id}`, 'warn');
+          continue;
+        }
+
+        // Filter relevant ratings for the newly added handles
+        const relevantRatings = ratingJson.result.filter(r => handles.includes(r.handle));
+        log(`➡️ Found ${relevantRatings.length} relevant ratings.`, 'info');
+
+        // Store the relevant ratings in the database
+        const { error } = await supabase.from('contest_ratings').insert([{
+          contest_id: contest.id,
+          contest_name: contest.name,
+          rating_data: relevantRatings,
+        }]);
+
+        if (error) {
+          log(`❌ Error saving to DB: ${error.message}`, 'error');
+        } else {
+          log(`✅ Stored contest ${contest.id} in DB.`, 'success');
+        }
+      }
+
+      log('🎉 Done updating contest ratings for new handles.', 'success');
     }
 
     // Add event listener for the fetch button to avoid inline onclick handler
