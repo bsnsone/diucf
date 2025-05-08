@@ -202,4 +202,7 @@ async function renderHandleList() {
 }
 
 
-window.onload = populateContestList;
+window.onload = () => {
+    populateContestList();
+    renderHandleList();
+};
