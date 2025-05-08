@@ -17,48 +17,63 @@
   </style>
 </head>
 <body>
-
   <h2>Codeforces Contest Ratings Fetcher</h2>
   <input type="number" id="contestCount" placeholder="Enter number of contests" />
   <button onclick="startFetching()">Fetch & Store</button>
+  <button onclick="clearLogs()">Clear Logs</button>
 
-  <div id="logs"></div>
+  <div id="logs" style="height: 300px; overflow-y: auto;"></div>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    // 🔐 Your Supabase credentials
-    const supabaseUrl = 'https://yvcxjijotyiyvwhcgcrh.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2Y3hqaWpvdHlpeXZ3aGNnY3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0ODk0OTAsImV4cCI6MjA2MjA2NTQ5MH0.Xk16aqTZZyiNUoFYmXgb6PauNxTZ-PwrOfH-6bvzl-U';
+    const supabaseUrl = 'https://YOUR_PROJECT.supabase.co';
+    const supabaseKey = 'YOUR_PUBLIC_ANON_KEY';
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const logBox = document.getElementById('logs');
-    const log = (msg) => logBox.textContent += msg + '\n';
+
+    const log = (msg, type = 'info') => {
+      const time = new Date().toLocaleTimeString();
+      const p = document.createElement('div');
+      p.textContent = `[${time}] ${msg}`;
+      p.style.margin = '4px 0';
+
+      if (type === 'success') p.style.color = 'green';
+      else if (type === 'error') p.style.color = 'red';
+      else if (type === 'warn') p.style.color = 'orange';
+      else p.style.color = '#333';
+
+      logBox.appendChild(p);
+      logBox.scrollTop = logBox.scrollHeight;
+    };
+
+    const clearLogs = () => {
+      logBox.innerHTML = '';
+    };
 
     async function startFetching() {
       const count = parseInt(document.getElementById('contestCount').value);
       if (!count || count < 1) return alert('Enter a valid number.');
 
-      logBox.textContent = 'Starting fetch process...\n';
+      clearLogs();
+      log('Starting fetch process...', 'info');
 
-      // ✅ Get handles
       const { data: handlesData, error: handlesError } = await supabase.from('handles').select('handle');
-      if (handlesError) return log('❌ Error fetching handles: ' + handlesError.message);
+      if (handlesError) return log('❌ Error fetching handles: ' + handlesError.message, 'error');
       const handles = handlesData.map(h => h.handle);
-      log(`✅ Fetched ${handles.length} handles.`);
+      log(`✅ Fetched ${handles.length} handles.`, 'success');
 
-      // ✅ Get contest list
       const contestsRes = await fetch('https://codeforces.com/api/contest.list');
       const contestsJson = await contestsRes.json();
-      if (contestsJson.status !== 'OK') return log('❌ Error fetching contest list.');
+      if (contestsJson.status !== 'OK') return log('❌ Error fetching contest list.', 'error');
 
       const latestContests = contestsJson.result.filter(c => c.phase === 'FINISHED').slice(0, count);
-      log(`✅ Fetched latest ${latestContests.length} contests.`);
+      log(`✅ Fetched latest ${latestContests.length} contests.`, 'success');
 
       for (const contest of latestContests) {
-        log(`\n🔄 Contest: ${contest.id} - ${contest.name}`);
+        log(`🔄 Contest: ${contest.id} - ${contest.name}`, 'info');
 
-        // ❌ Check if contest already exists
         const { data: existing, error: checkError } = await supabase
           .from('contest_ratings')
           .select('id')
@@ -66,28 +81,25 @@
           .maybeSingle();
 
         if (checkError) {
-          log(`⚠️ DB check error for contest ${contest.id}: ${checkError.message}`);
+          log(`⚠️ DB check error: ${checkError.message}`, 'warn');
           continue;
         }
 
         if (existing) {
-          log(`⏭️ Contest ${contest.id} already in DB. Skipping.`);
+          log(`⏭️ Contest ${contest.id} already in DB. Skipping.`, 'warn');
           continue;
         }
 
-        // ✅ Fetch rating changes
         const ratingRes = await fetch(`https://codeforces.com/api/contest.ratingChanges?contestId=${contest.id}`);
         const ratingJson = await ratingRes.json();
         if (ratingJson.status !== 'OK') {
-          log(`⚠️ No rating data for contest ${contest.id}`);
+          log(`⚠️ No rating data for contest ${contest.id}`, 'warn');
           continue;
         }
 
-        // ✅ Filter only relevant handles
         const relevantRatings = ratingJson.result.filter(r => handles.includes(r.handle));
-        log(`➡️ Found ${relevantRatings.length} relevant ratings.`);
+        log(`➡️ Found ${relevantRatings.length} relevant ratings.`, 'info');
 
-        // ✅ Store in Supabase
         const { error } = await supabase.from('contest_ratings').insert([{
           contest_id: contest.id,
           contest_name: contest.name,
@@ -95,15 +107,14 @@
         }]);
 
         if (error) {
-          log(`❌ Error saving to DB: ${error.message}`);
+          log(`❌ Error saving to DB: ${error.message}`, 'error');
         } else {
-          log(`✅ Stored contest ${contest.id} in DB.`);
+          log(`✅ Stored contest ${contest.id} in DB.`, 'success');
         }
       }
 
-      log('\n🎉 All done!');
+      log('🎉 Done fetching and storing all contest ratings.', 'success');
     }
   </script>
-
 </body>
 </html>
