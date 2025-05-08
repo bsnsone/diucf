@@ -27,9 +27,11 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-    const supabaseUrl = "https://yvcxjijotyiyvwhcgcrh.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2Y3hqaWpvdHlpeXZ3aGNnY3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0ODk0OTAsImV4cCI6MjA2MjA2NTQ5MH0.Xk16aqTZZyiNUoFYmXgb6PauNxTZ-PwrOfH-6bvzl-U";
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(
+      "https://yvcxjijotyiyvwhcgcrh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2Y3hqaWpvdHlpeXZ3aGNnY3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0ODk0OTAsImV4cCI6MjA2MjA2NTQ5MH0.Xk16aqTZZyiNUoFYmXgb6PauNxTZ-PwrOfH-6bvzl-U"
+    );
+    
     const logBox = document.getElementById('logs');
 
     const log = (msg, type = 'info') => {
@@ -37,125 +39,77 @@
       const p = document.createElement('div');
       p.textContent = `[${time}] ${msg}`;
       p.style.margin = '4px 0';
-      if (type === 'success') p.style.color = 'green';
-      else if (type === 'error') p.style.color = 'red';
-      else if (type === 'warn') p.style.color = 'orange';
-      else p.style.color = '#333';
+      p.style.color =
+        type === 'success' ? 'green' :
+        type === 'error' ? 'red' :
+        type === 'warn' ? 'orange' : '#333';
       logBox.appendChild(p);
       logBox.scrollTop = logBox.scrollHeight;
     };
 
-    const clearLogs = () => {
-      logBox.innerHTML = '';
-    };
+    const clearLogs = () => { logBox.innerHTML = ''; };
 
-    // Function to fetch and store contest ratings for handles
     async function startFetching() {
       const count = parseInt(document.getElementById('contestCount').value);
       if (!count || count < 1) return alert('Enter a valid number.');
-    
+
       clearLogs();
       log('Starting fetch process...', 'info');
-    
-      // Fetch all handles from the database
+
       const { data: handlesData, error: handlesError } = await supabase.from('handles').select('handle');
       if (handlesError) return log('❌ Error fetching handles: ' + handlesError.message, 'error');
       const handles = handlesData.map(h => h.handle);
       log(`✅ Fetched ${handles.length} handles.`, 'success');
-    
-      // Fetch the contest list
+
       const contestsRes = await fetch('https://codeforces.com/api/contest.list');
       const contestsJson = await contestsRes.json();
       if (contestsJson.status !== 'OK') return log('❌ Error fetching contest list.', 'error');
-    
+
       const latestContests = contestsJson.result.filter(c => c.phase === 'FINISHED').slice(0, count);
       log(`✅ Fetched latest ${latestContests.length} contests.`, 'success');
-    
+
       for (const contest of latestContests) {
         log(`🔄 Contest: ${contest.id} - ${contest.name}`, 'info');
-    
-        // Fetch existing contest data by contest_id
-        const { data: existingContest, error: contestError } = await supabase
+
+        // Always delete the existing contest row first
+        const { error: deleteError } = await supabase
           .from('contest_ratings')
-          .select('id, contest_id')
-          .eq('contest_id', contest.id)
-          .single(); // Use .single() to get one result instead of an array
-    
-        if (contestError && contestError.code !== 'PGRST100') {
-          log(`⚠️ Error fetching contest ${contest.id}: ${contestError.message}`, 'warn');
-          continue;
+          .delete()
+          .eq('contest_id', contest.id);
+
+        if (deleteError) {
+          log(`⚠️ Failed to delete old data for ${contest.id}: ${deleteError.message}`, 'warn');
+        } else {
+          log(`🗑️ Deleted existing data for contest ${contest.id}`, 'info');
         }
-    
-        // Fetch the contest's rating data from Codeforces API
+
+        // Fetch new rating data
         const ratingRes = await fetch(`https://codeforces.com/api/contest.ratingChanges?contestId=${contest.id}`);
         const ratingJson = await ratingRes.json();
         if (ratingJson.status !== 'OK') {
           log(`⚠️ No rating data for contest ${contest.id}`, 'warn');
           continue;
         }
-    
-        // Filter relevant ratings for the existing handles
+
         const relevantRatings = ratingJson.result.filter(r => handles.includes(r.handle));
         log(`➡️ Found ${relevantRatings.length} relevant ratings.`, 'info');
-    
-        if (existingContest) {
-          // If the contest already exists, update the ratings with the new handles
-          const { error: updateError } = await supabase.from('contest_ratings').update({
-            rating_data: relevantRatings
-          }).eq('contest_id', contest.id);
-    
-          if (updateError) {
-            log(`❌ Error updating DB: ${updateError.message}`, 'error');
-          } else {
-            log(`✅ Updated contest ${contest.id} ratings in DB.`, 'success');
-          }
+
+        const { error: insertError } = await supabase.from('contest_ratings').insert([{
+          contest_id: contest.id,
+          contest_name: contest.name,
+          rating_data: relevantRatings
+        }]);
+
+        if (insertError) {
+          log(`❌ Error inserting contest ${contest.id}: ${insertError.message}`, 'error');
         } else {
-          // If the contest does not exist, insert it
-          const { error: insertError } = await supabase.from('contest_ratings').insert([{
-            contest_id: contest.id,
-            contest_name: contest.name,
-            rating_data: relevantRatings,
-          }]);
-    
-          if (insertError) {
-            log(`❌ Error saving to DB: ${insertError.message}`, 'error');
-          } else {
-            log(`✅ Stored contest ${contest.id} in DB.`, 'success');
-          }
+          log(`✅ Stored updated data for contest ${contest.id}`, 'success');
         }
       }
-    
-      log('🎉 Done fetching and storing all contest ratings.', 'success');
+
+      log('🎉 Done updating contest ratings.', 'success');
     }
 
-    // Function to remove rating data for removed handles
-    async function removeRatingsForRemovedHandles() {
-      const { data: handlesData, error: handlesError } = await supabase.from('handles').select('handle');
-      if (handlesError) return log('❌ Error fetching handles: ' + handlesError.message, 'error');
-      const handles = handlesData.map(h => h.handle);
-
-      const { data: contestsData, error: contestsError } = await supabase.from('contest_ratings').select('contest_id, rating_data');
-      if (contestsError) return log('❌ Error fetching contests: ' + contestsError.message, 'error');
-
-      for (const contest of contestsData) {
-        const updatedRatings = contest.rating_data.filter(r => handles.includes(r.handle));
-
-        // If the ratings for the contest have changed (some handles were removed)
-        if (updatedRatings.length !== contest.rating_data.length) {
-          const { error: updateError } = await supabase.from('contest_ratings').update({
-            rating_data: updatedRatings
-          }).eq('contest_id', contest.contest_id);
-
-          if (updateError) {
-            log(`❌ Error updating ratings for contest ${contest.contest_id}: ${updateError.message}`, 'error');
-          } else {
-            log(`✅ Updated ratings for contest ${contest.contest_id}.`, 'success');
-          }
-        }
-      }
-    }
-
-    // Add event listener for the fetch button to avoid inline onclick handler
     document.getElementById('fetchButton').addEventListener('click', startFetching);
   </script>
 </body>
