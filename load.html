@@ -19,16 +19,18 @@
 <body>
   <h2>Codeforces Contest Ratings Fetcher</h2>
   <input type="number" id="contestCount" placeholder="Enter number of contests" />
-  <button onclick="startFetching()">Fetch & Store</button>
+  <button id="fetchButton">Fetch & Store</button>
   <button onclick="clearLogs()">Clear Logs</button>
 
   <div id="logs" style="height: 300px; overflow-y: auto;"></div>
 
+  <!-- Move the script here to ensure it loads after DOM elements -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    const supabaseUrl = 'https://YOUR_PROJECT.supabase.co';
-    const supabaseKey = 'YOUR_PUBLIC_ANON_KEY';
+    const supabaseUrl = "https://yvcxjijotyiyvwhcgcrh.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2Y3hqaWpvdHlpeXZ3aGNnY3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0ODk0OTAsImV4cCI6MjA2MjA2NTQ5MH0.Xk16aqTZZyiNUoFYmXgb6PauNxTZ-PwrOfH-6bvzl-U";
+
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const logBox = document.getElementById('logs');
@@ -115,6 +117,9 @@
 
       log('🎉 Done fetching and storing all contest ratings.', 'success');
     }
+
+    // Add event listener for the fetch button to avoid inline onclick handler
+    document.getElementById('fetchButton').addEventListener('click', startFetching);
   </script>
 </body>
 </html>
