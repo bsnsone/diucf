@@ -24,7 +24,6 @@
 
   <div id="logs" style="height: 300px; overflow-y: auto;"></div>
 
-  <!-- Move the script here to ensure it loads after DOM elements -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
@@ -74,6 +73,8 @@
       const latestContests = contestsJson.result.filter(c => c.phase === 'FINISHED').slice(0, count);
       log(`✅ Fetched latest ${latestContests.length} contests.`, 'success');
 
+      let changesMade = false;
+
       for (const contest of latestContests) {
         log(`🔄 Contest: ${contest.id} - ${contest.name}`, 'info');
 
@@ -101,6 +102,13 @@
         }
 
         const relevantRatings = ratingJson.result.filter(r => handles.includes(r.handle));
+        if (relevantRatings.length === 0) {
+          log(`⚠️ No new ratings for contest ${contest.id}`, 'warn');
+          continue;
+        }
+
+        changesMade = true; // Mark that changes were made
+
         log(`➡️ Found ${relevantRatings.length} relevant ratings.`, 'info');
 
         const { error } = await supabase.from('contest_ratings').insert([{
@@ -116,72 +124,11 @@
         }
       }
 
-      log('🎉 Done fetching and storing all contest ratings.', 'success');
-    }
-
-    // Function to update contest ratings for new handles
-    async function updateContestRatingsForNewHandles() {
-      // Fetch new handles from the database
-      const { data: handlesData, error: handlesError } = await supabase.from('handles').select('handle');
-      if (handlesError) return log('❌ Error fetching handles: ' + handlesError.message, 'error');
-      const handles = handlesData.map(h => h.handle);
-      log(`✅ Fetched ${handles.length} handles.`, 'success');
-
-      // Fetch contest list again
-      const contestsRes = await fetch('https://codeforces.com/api/contest.list');
-      const contestsJson = await contestsRes.json();
-      if (contestsJson.status !== 'OK') return log('❌ Error fetching contest list.', 'error');
-
-      const latestContests = contestsJson.result.filter(c => c.phase === 'FINISHED');
-      log(`✅ Fetched latest ${latestContests.length} contests.`, 'success');
-
-      // Loop through each contest and check for new ratings
-      for (const contest of latestContests) {
-        log(`🔄 Contest: ${contest.id} - ${contest.name}`, 'info');
-
-        const { data: existing, error: checkError } = await supabase
-          .from('contest_ratings')
-          .select('id')
-          .eq('contest_id', contest.id)
-          .maybeSingle();
-
-        if (checkError) {
-          log(`⚠️ DB check error: ${checkError.message}`, 'warn');
-          continue;
-        }
-
-        if (existing) {
-          log(`⏭️ Contest ${contest.id} already in DB. Skipping.`, 'warn');
-          continue;
-        }
-
-        // Fetch the rating changes for this contest
-        const ratingRes = await fetch(`https://codeforces.com/api/contest.ratingChanges?contestId=${contest.id}`);
-        const ratingJson = await ratingRes.json();
-        if (ratingJson.status !== 'OK') {
-          log(`⚠️ No rating data for contest ${contest.id}`, 'warn');
-          continue;
-        }
-
-        // Filter relevant ratings for the newly added handles
-        const relevantRatings = ratingJson.result.filter(r => handles.includes(r.handle));
-        log(`➡️ Found ${relevantRatings.length} relevant ratings.`, 'info');
-
-        // Store the relevant ratings in the database
-        const { error } = await supabase.from('contest_ratings').insert([{
-          contest_id: contest.id,
-          contest_name: contest.name,
-          rating_data: relevantRatings,
-        }]);
-
-        if (error) {
-          log(`❌ Error saving to DB: ${error.message}`, 'error');
-        } else {
-          log(`✅ Stored contest ${contest.id} in DB.`, 'success');
-        }
+      if (!changesMade) {
+        log("⚡ No changes made. All contests either already stored or no relevant ratings found.", 'warn');
+      } else {
+        log('🎉 Done fetching and storing all contest ratings.', 'success');
       }
-
-      log('🎉 Done updating contest ratings for new handles.', 'success');
     }
 
     // Add event listener for the fetch button to avoid inline onclick handler
