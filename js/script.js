@@ -184,4 +184,22 @@ async function checkRating(forcedId = null) {
     }
 }
 
+async function renderHandleList() {
+    const tableBody = document.querySelector("#handleTable tbody");
+    tableBody.innerHTML = ""; // Clear previous content
+
+    const handles = await fetchHandlesFromDB();
+    if (handles.length === 0) {
+        tableBody.innerHTML = "<tr><td colspan='2'>No handles saved yet.</td></tr>";
+        return;
+    }
+
+    handles.forEach((handle, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${index + 1}</td><td>${handle}</td>`;
+        tableBody.appendChild(row);
+    });
+}
+
+
 window.onload = populateContestList;
