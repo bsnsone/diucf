@@ -17,9 +17,29 @@ async function fetchHandlesFromDB() {
     }
 }
 
+async function verifyPassword(inputPassword) {
+    try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/handle_password?select=password`, {
+            headers: {
+                apikey: supabaseKey,
+                Authorization: `Bearer ${supabaseKey}`,
+            }
+        });
+        const data = await res.json();
+        return data.length > 0 && data[0].password === inputPassword;
+    } catch (err) {
+        console.error("Error verifying password:", err);
+        return false;
+    }
+}
+
 async function addHandle() {
     const handle = document.getElementById("newHandle").value.trim();
-    if (!handle) return;
+    const password = document.getElementById("handlePassword").value.trim();
+    if (!handle || !password) return alert("Please enter handle and password.");
+
+    const isValid = await verifyPassword(password);
+    if (!isValid) return alert("Invalid password.");
 
     try {
         const response = await fetch(`${supabaseUrl}/rest/v1/handles`, {
@@ -32,22 +52,24 @@ async function addHandle() {
             body: JSON.stringify({ handle })
         });
 
-        if (!response.ok) {
-            throw new Error("Failed to add handle");
-        }
+        if (!response.ok) throw new Error("Failed to add handle");
 
         document.getElementById("newHandle").value = "";
         alert("Handle added!");
-        await renderHandleList();
+        renderHandleList(); // optional: refresh table
     } catch (error) {
         console.error("Error adding handle:", error);
-        alert("An error occurred while adding the handle. Please try again.");
+        alert("An error occurred while adding the handle.");
     }
 }
 
 async function removeHandle() {
     const handle = document.getElementById("newHandle").value.trim();
-    if (!handle) return;
+    const password = document.getElementById("handlePassword").value.trim();
+    if (!handle || !password) return alert("Please enter handle and password.");
+
+    const isValid = await verifyPassword(password);
+    if (!isValid) return alert("Invalid password.");
 
     try {
         const res = await fetch(`${supabaseUrl}/rest/v1/handles?handle=eq.${handle}`, {
@@ -60,7 +82,7 @@ async function removeHandle() {
         if (res.ok) {
             alert("Handle removed!");
             document.getElementById("newHandle").value = "";
-            await renderHandleList();
+            renderHandleList(); // optional: refresh table
         } else {
             alert("Failed to remove handle.");
         }
