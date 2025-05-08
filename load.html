@@ -20,7 +20,7 @@
   <h2>Codeforces Contest Ratings Fetcher</h2>
   <input type="number" id="contestCount" placeholder="Enter number of contests" />
   <button id="fetchButton">Fetch & Store</button>
-  <button onclick="clearLogs()">Clear Logs</button>
+  <button id="clearButton">Clear Logs</button>
 
   <div id="logs" style="height: 300px; overflow-y: auto;"></div>
 
@@ -111,6 +111,7 @@
     }
 
     document.getElementById('fetchButton').addEventListener('click', startFetching);
+    document.getElementById('clearButton').addEventListener('click', clearLogs);
   </script>
 </body>
 </html>
