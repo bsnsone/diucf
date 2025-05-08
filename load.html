@@ -103,7 +103,7 @@
     <div class="container">
         <div class="controls">
             <input type="number" id="contestCount" class="load-input" value="15" min="1" placeholder="Number of contests">
-            <button class="load-button" onclick="loadLatestContests()">Load</button>
+            <button class="load-button" id="loadButton">Load</button>
         </div>
         <div id="loadLogs"></div>
         <h1>Handles and Contests Data</h1>
@@ -114,64 +114,90 @@
     </div>
 
     <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+        import { fetchHandlesFromDB } from './script.js';
 
-        // Supabase configuration
-        const supabaseUrl = 'https://your-supabase-url.supabase.co';
-        const supabaseKey = 'your-supabase-key';
-        const supabase = createClient(supabaseUrl, supabaseKey);
-
-        // Fetch handles from database
-        async function fetchHandlesFromDB() {
-            try {
-                const { data, error } = await supabase.from('handles').select('handle');
-                if (error) throw error;
-                return data.map(row => row.handle);
-            } catch (error) {
-                console.error('Error fetching handles:', error);
-                throw error;
-            }
-        }
+        // Supabase configuration (same as script.js)
+        const supabaseUrl = "https://yvcxjijotyiyvwhcgcrh.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2Y3hqaWpvdHlpeXZ3aGNnY3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0ODk0OTAsImV4cCI6MjA2MjA2NTQ5MH0.Xk16aqTZZyiNUoFYmXgb6PauNxTZ-PwrOfH-6bvzl-U";
 
         // Check if a contest exists in the database
         async function contestExists(contestId) {
-            const { data, error } = await supabase
-                .from('contests')
-                .select('id')
-                .eq('id', contestId)
-                .maybeSingle();
-            if (error) throw error;
-            return !!data;
+            try {
+                const res = await fetch(`${supabaseUrl}/rest/v1/contests?id=eq.${contestId}`, {
+                    headers: {
+                        apikey: supabaseKey,
+                        Authorization: `Bearer ${supabaseKey}`,
+                    }
+                });
+                const data = await res.json();
+                return data.length > 0;
+            } catch (err) {
+                console.error("Error checking contest existence:", err);
+                throw err;
+            }
         }
 
         // Check if a contest has associated handles
         async function hasHandles(contestId) {
-            const { data, error } = await supabase
-                .from('contest_handles')
-                .select('handle')
-                .eq('contest_id', contestId);
-            if (error) throw error;
-            return data.length > 0;
+            try {
+                const handles = await fetchHandlesFromDB();
+                const res = await fetch(`${supabaseUrl}/rest/v1/contest_ratings?contest_id=eq.${contestId}&select=rating_data`, {
+                    headers: {
+                        apikey: supabaseKey,
+                        Authorization: `Bearer ${supabaseKey}`,
+                    }
+                });
+                const data = await res.json();
+                return data.length > 0 && data[0]?.rating_data?.some(entry => handles.includes(entry.handle)) || false;
+            } catch (err) {
+                console.error("Error checking handles:", err);
+                return false;
+            }
         }
 
         // Insert a new contest into the database
         async function insertContest(contest) {
-            const { error } = await supabase
-                .from('contests')
-                .insert([{ id: contest.id, name: contest.name, date: contest.date }]);
-            if (error) throw error;
+            try {
+                const res = await fetch(`${supabaseUrl}/rest/v1/contests`, {
+                    method: "POST",
+                    headers: {
+                        apikey: supabaseKey,
+                        Authorization: `Bearer ${supabaseKey}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        id: contest.id,
+                        name: contest.name,
+                        date: new Date(contest.startTimeSeconds * 1000).toISOString(),
+                    })
+                });
+                if (!res.ok) throw new Error("Failed to insert contest");
+            } catch (err) {
+                console.error("Error inserting contest:", err);
+                throw err;
+            }
         }
 
-        // Fetch contests from an external source (placeholder)
+        // Fetch contests from Codeforces API
         async function fetchExternalContests(limit) {
-            // Replace with actual API call (e.g., Codeforces API)
-            // This is a mock response
-            const mockContests = Array.from({ length: limit }, (_, i) => ({
-                id: 1000 + i,
-                name: `Contest ${1000 + i}`,
-                date: new Date(2025, 4, 8 - i).toISOString()
-            }));
-            return mockContests;
+            try {
+                const res = await fetch("https://codeforces.com/api/contest.list?gym=false");
+                const data = await res.json();
+                if (data.status !== "OK") {
+                    throw new Error("Failed to fetch contest list");
+                }
+                return data.result
+                    .filter(c => c.phase === "FINISHED")
+                    .slice(0, limit)
+                    .map(c => ({
+                        id: c.id,
+                        name: c.name,
+                        startTimeSeconds: c.startTimeSeconds
+                    }));
+            } catch (err) {
+                console.error("Failed to fetch contests:", err);
+                throw err;
+            }
         }
 
         // Load latest contests
@@ -181,19 +207,15 @@
             const countInput = document.getElementById("contestCount");
             const limit = parseInt(countInput.value) || 15;
 
-            // Show processing message
             logDiv.innerHTML = '<p class="log log-processing">Processing...</p>';
 
             try {
-                // Fetch external contests
                 const externalContests = await fetchExternalContests(limit);
                 const logs = [];
                 let newContestCount = 0;
 
-                // Clear processing message and start logging
                 logDiv.innerHTML = '';
 
-                // Process each contest
                 for (const contest of externalContests) {
                     const exists = await contestExists(contest.id);
                     if (exists) {
@@ -207,30 +229,30 @@
                         continue;
                     }
 
-                    // Insert new contest
                     await insertContest(contest);
                     logs.push(`<p class="log log-success">Contest ${contest.id} (${contest.name}) successfully imported.</p>`);
                     newContestCount++;
                 }
 
-                // Update contests table
-                const contests = await supabase
-                    .from('contests')
-                    .select('id, name, date')
-                    .order('date', { ascending: false })
-                    .limit(limit);
+                const res = await fetch(`${supabaseUrl}/rest/v1/contests?select=id,name,date&order=date.desc&limit=${limit}`, {
+                    headers: {
+                        apikey: supabaseKey,
+                        Authorization: `Bearer ${supabaseKey}`,
+                    }
+                });
+                const contests = await res.json();
 
-                if (contests.data.length === 0) {
+                if (contests.length === 0) {
                     tableDiv.innerHTML = '<p class="no-data">No contests found in the database.</p>';
                     logDiv.innerHTML += `<p class="log">No contests loaded.</p>`;
                 } else {
                     let html = '<table><thead><tr><th>ID</th><th>Name</th><th>Date</th></tr></thead><tbody>';
-                    contests.data.forEach(contest => {
+                    contests.forEach(contest => {
                         html += `<tr><td>${contest.id}</td><td>${contest.name}</td><td>${new Date(contest.date).toLocaleDateString()}</td></tr>`;
                     });
                     html += '</tbody></table>';
                     tableDiv.innerHTML = html;
-                    logDiv.innerHTML = logs.join('') + `<p class="log log-success">Loaded ${contests.data.length} contests (${newContestCount} new).</p>`;
+                    logDiv.innerHTML = logs.join('') + `<p class="log log-success">Loaded ${contests.length} contests (${newContestCount} new).</p>`;
                 }
             } catch (error) {
                 console.error("Error loading contests:", error);
@@ -261,8 +283,9 @@
             }
         }
 
-        // Load handles on page load
+        // Initialize
         window.onload = loadHandles;
+        document.getElementById("loadButton").addEventListener("click", loadLatestContests);
     </script>
 </body>
 </html>
