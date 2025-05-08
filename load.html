@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Handles Data</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -129,6 +128,7 @@
                         Authorization: `Bearer ${supabaseKey}`,
                     }
                 });
+                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
                 const data = await res.json();
                 return data.length > 0;
             } catch (err) {
@@ -147,6 +147,7 @@
                         Authorization: `Bearer ${supabaseKey}`,
                     }
                 });
+                if (!res.ok) return false;
                 const data = await res.json();
                 return data.length > 0 && data[0]?.rating_data?.some(entry => handles.includes(entry.handle)) || false;
             } catch (err) {
@@ -171,7 +172,7 @@
                         date: new Date(contest.startTimeSeconds * 1000).toISOString(),
                     })
                 });
-                if (!res.ok) throw new Error("Failed to insert contest");
+                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
             } catch (err) {
                 console.error("Error inserting contest:", err);
                 throw err;
@@ -182,6 +183,7 @@
         async function fetchExternalContests(limit) {
             try {
                 const res = await fetch("https://codeforces.com/api/contest.list?gym=false");
+                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
                 const data = await res.json();
                 if (data.status !== "OK") {
                     throw new Error("Failed to fetch contest list");
@@ -240,11 +242,12 @@
                         Authorization: `Bearer ${supabaseKey}`,
                     }
                 });
+                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
                 const contests = await res.json();
 
                 if (contests.length === 0) {
                     tableDiv.innerHTML = '<p class="no-data">No contests found in the database.</p>';
-                    logDiv.innerHTML += `<p class="log">No contests loaded.</p>`;
+                    logDiv.innerHTML = logs.join('') + `<p class="log">No contests loaded.</p>`;
                 } else {
                     let html = '<table><thead><tr><th>ID</th><th>Name</th><th>Date</th></tr></thead><tbody>';
                     contests.forEach(contest => {
@@ -256,8 +259,8 @@
                 }
             } catch (error) {
                 console.error("Error loading contests:", error);
+                logDiv.innerHTML = '<p class="error">Error loading contests: ' + error.message + '</p>';
                 tableDiv.innerHTML = '<p class="error">Error loading contests. Please try again later.</p>';
-                logDiv.innerHTML = '<p class="error">Error loading contests.</p>';
             }
         }
 
@@ -279,7 +282,7 @@
                 tableDiv.innerHTML = html;
             } catch (error) {
                 console.error("Error loading handles:", error);
-                tableDiv.innerHTML = '<p class="error">Error loading data. Please try again later.</p>';
+                tableDiv.innerHTML = '<p class="error">Error loading handles: ' + error.message + '</p>';
             }
         }
 
