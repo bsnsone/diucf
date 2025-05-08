@@ -5,6 +5,43 @@ body {
   padding: 20px;
 }
 
+/* handle list table container style */
+
+#handleListContainer {
+  margin-top: 40px;
+}
+
+#handleListContainer h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+#handleTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+#handleTable th,
+#handleTable td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+#handleTable th {
+  background-color: #f1f5f9;
+  color: #111827;
+}
+
+#handleTable tr:hover {
+  background-color: #f9fafb;
+}
+
+
+/* handle box style */
+
 .container {
   max-width: 500px;
   margin: 50px auto;
