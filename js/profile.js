@@ -57,6 +57,20 @@ function fetchProfile(handleFromInput = null) {
     return;
   }
 
+  // creator courtesy
+  
+  if (handle === 'imransihab0') {
+    document.body.style.background = `url('./assets/cherry.jpg') no-repeat center center fixed`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.animation = 'moveBackground 20s linear infinite';
+  } else {
+    document.body.style.background = '';
+    document.body.style.backgroundSize = '';
+    document.body.style.animation = '';
+  }
+
+  // creator courtesy
+  
   const card = document.getElementById('profile-card');
   const button = document.querySelector('.input-group button');
   button.disabled = true;
