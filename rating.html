@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Codeforces Rating Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://imransihab0.github.io/amar_ami/is.png" type="image/png" sizes="32x32">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Codeforces Rating Viewer</h1>
+
+    <div class="toggle-options">
+      <input type="radio" name="mode" value="id" id="searchById" checked onchange="toggleMode()">
+      <label for="searchById">Search by ID</label>
+      <input type="radio" name="mode" value="dropdown" id="chooseFromList" onchange="toggleMode()">
+      <label for="chooseFromList">Choose from List</label>
+    </div>
+
+    <div class="input-container" id="inputById">
+      <input type="number" id="contestId" placeholder="Enter Contest ID (e.g., 2108)">
+      <button onclick="checkRating()">Check</button>
+    </div>
+
+    <div class="input-container" id="inputByDropdown" style="display: none;">
+      <select id="contestSelect"></select>
+      <button onclick="checkRatingFromDropdown()">Check</button>
+    </div>
+
+    <div id="result"></div>
+  </div>
+
+  <footer>
+    Courtesy <a href="https://github.com/imransihab0" target="_blank">@imransihab0</a>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
