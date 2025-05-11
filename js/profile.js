@@ -47,8 +47,9 @@ function clearError() {
   errorDiv.style.display = 'none';
 }
 
-function fetchProfile() {
-  const handle = document.getElementById('handleInput').value.trim();
+function fetchProfile(handleFromInput = null) {
+  const handleInput = document.getElementById('handleInput');
+  const handle = handleFromInput || handleInput.value.trim();
   if (!handle) {
     showError('Please enter a valid Codeforces handle.');
     document.getElementById('profile-card').style.display = 'none';
@@ -61,6 +62,11 @@ function fetchProfile() {
   button.disabled = true;
   button.textContent = 'Loading...';
   clearError();
+
+  // Update URL with handle
+  if (handle) {
+    history.pushState(null, '', `?handle=${encodeURIComponent(handle)}`);
+  }
 
   fetch(`https://codeforces.com/api/user.info?handles=${handle}`)
     .then(res => {
@@ -101,6 +107,10 @@ function fetchProfile() {
       if (currentRank) {
         card.classList.add(currentRank);
         document.getElementById('handle-value').classList.add(`rank-color-${currentRank}`);
+        // Add special handle styling for legendary-grandmaster
+        if (currentRank === 'legendary-grandmaster') {
+          document.getElementById('handle-value').classList.add('legendary-grandmaster-handle');
+        }
         document.getElementById('rank-value').classList.add(`rank-color-${currentRank}`);
         document.getElementById('rating-value').classList.add(`rank-color-${currentRank}`);
         document.getElementById('max-rating-value').classList.add(`rank-color-${maxRank || currentRank}`);
@@ -116,7 +126,7 @@ function fetchProfile() {
     .catch(err => {
       console.error('Failed to load user info:', err);
       showError(err.message);
-      document.getElementById('handleInput').value = '';
+      handleInput.value = '';
       card.style.display = 'none';
       document.getElementById('tableContainer').innerHTML = '';
     })
@@ -205,3 +215,13 @@ async function fetchRatingsFromHandle(handle) {
     tableContainer.innerHTML = '<p style="color:red;">Error fetching contest data.</p>';
   }
 }
+
+// Check for handle in URL on page load
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const handle = params.get('handle');
+  if (handle) {
+    document.getElementById('handleInput').value = handle;
+    fetchProfile(handle);
+  }
+});
