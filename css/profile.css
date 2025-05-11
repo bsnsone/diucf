@@ -69,7 +69,7 @@ body {
 .violet { color: #aa00aa; }
 .orange { color: #ff8c00; }
 .red { color: #ff0000; }
-.legendary { color: #880000; }
+.legendary { color: #ff0000; }
 
 /* Style for Input Group */
 .input-group {
@@ -159,9 +159,25 @@ body {
 .rank-color-candidate-master { color: #b925b9; }
 .rank-color-master { color: #ffab03; }
 .rank-color-international-master { color: #ff9900; }
-.rank-color-grandmaster { color: #CC2222; }
-.rank-color-international-grandmaster { color: #CC0000; }
-.rank-color-legendary-grandmaster { color: #880000; }
+.rank-color-grandmaster { color: #ff0000; }
+.rank-color-international-grandmaster { color: #ff0000; }
+.rank-color-legendary-grandmaster { color: #ff0000; }
+
+/* Legendary Grandmaster handle styling */
+.legendary-grandmaster-handle {
+  position: relative;
+  display: inline-block;
+}
+
+.legendary-grandmaster-handle::first-letter {
+  color: #000000; /* Black for the first letter */
+  font-weight: bold;
+}
+
+.legendary-grandmaster-handle {
+  color: #ff0000; /* Red for the rest of the letters */
+  font-weight: bold;
+}
 
 span.rank-color-newbie,
 span.rank-color-pupil,
@@ -179,27 +195,27 @@ span.rank-color-legendary-grandmaster {
 /* Mobile responsiveness */
 @media (max-width: 600px) {
   .input-group {
-    width: 100%;
-    flex-direction: column;
+      width: 100%;
+      flex-direction: column;
   }
 
   .input-group input, .input-group button {
-    width: 100%;
-    border-radius: 6px;
-    margin-bottom: 10px;
+      width: 100%;
+      border-radius: 6px;
+      margin-bottom: 10px;
   }
 
   .error-message {
-    width: 100%;
-    text-align: center;
+      width: 100%;
+      text-align: center;
   }
 
   .card {
-    width: 100%;
-    max-width: 100%;
+      width: 100%;
+      max-width: 100%;
   }
 
   .ratings-table-container table {
-    width: 100%;
+      width: 100%;
   }
 }
