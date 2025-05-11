@@ -218,18 +218,26 @@ async function renderHandleList() {
         return;
     }
 
-    for (let index = 0; index < handles.length; index++) {
-        const handle = handles[index];
+    // Build the query string: handle1,handle2,handle3,...
+    const query = handles.join(",");
+    let handleDataMap = {};
 
-        // Fetch rank color from your API
-        let color = "#999999"; // default
-        try {
-            const res = await fetch(`/api/getRating?handle=${handle}`);
-            const data = await res.json();
-            if (data.color) color = data.color;
-        } catch (err) {
-            console.error(`Failed to fetch rating for ${handle}`);
-        }
+    try {
+        const res = await fetch(`/api/getRating?handle=${query}`);
+        const data = await res.json();
+
+        // Normalize single or multiple results
+        const handleDataArray = Array.isArray(data) ? data : [data];
+        handleDataMap = Object.fromEntries(
+            handleDataArray.map(h => [h.handle.toLowerCase(), h.color])
+        );
+    } catch (err) {
+        console.error("Failed to fetch handle data in batch", err);
+    }
+
+    // Render each row with corresponding color
+    handles.forEach((handle, index) => {
+        const color = handleDataMap[handle.toLowerCase()] || "#999999";
 
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -237,8 +245,9 @@ async function renderHandleList() {
             <td style="color: ${color}; font-weight: bold;">${handle}</td>
         `;
         tableBody.appendChild(row);
-    }
+    });
 }
+
 
 window.onload = () => {
     populateContestList();
