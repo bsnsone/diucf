@@ -224,7 +224,7 @@ async function renderHandleList() {
         // Fetch rank color from your API
         let color = "#999999"; // default
         try {
-            const res = await fetch(`/getRating?handle=${handle}`);
+            const res = await fetch(`/api/getRating?handle=${handle}`);
             const data = await res.json();
             if (data.color) color = data.color;
         } catch (err) {
