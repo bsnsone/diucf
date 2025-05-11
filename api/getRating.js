@@ -1,23 +1,33 @@
-// api/getRating.js
-
 export default async function handler(req, res) {
-    const { handle } = req.query;
+    let { handle } = req.query;
 
     if (!handle) {
         return res.status(400).json({ error: "Missing handle parameter" });
     }
 
+    // Handle could be a single string or a stringified array
+    let handles = [];
+
     try {
-        const response = await fetch(`https://codeforces.com/api/user.info?handles=${handle}`);
+        if (handle.startsWith("[") && handle.endsWith("]")) {
+            // Convert string '[a,b]' to array
+            handles = JSON.parse(handle.replace(/'/g, '"'));
+        } else {
+            handles = [handle];
+        }
+    } catch (err) {
+        return res.status(400).json({ error: "Invalid handle format" });
+    }
+
+    try {
+        const joinedHandles = handles.join(";");
+        const response = await fetch(`https://codeforces.com/api/user.info?handles=${joinedHandles}`);
         const data = await response.json();
 
         if (data.status !== "OK") {
-            return res.status(404).json({ error: "User not found" });
+            return res.status(404).json({ error: "One or more users not found" });
         }
 
-        const rating = data.result[0].rating || 0;
-
-        // Get rank by rating
         const getRankByRating = (rating) => {
             if (rating < 1200) return 'newbie';
             if (rating < 1400) return 'pupil';
@@ -31,7 +41,6 @@ export default async function handler(req, res) {
             return 'legendary-grandmaster';
         };
 
-        // Color map
         const colorMap = {
             "newbie": "#999999",
             "pupil": "#16b316",
@@ -45,11 +54,25 @@ export default async function handler(req, res) {
             "legendary-grandmaster": "#ff0000"
         };
 
-        const rank = getRankByRating(rating);
-        const color = colorMap[rank];
+        const results = data.result.map(user => {
+            const rating = user.rating || 0;
+            const rank = getRankByRating(rating);
+            const color = colorMap[rank];
+            return {
+                handle: user.handle,
+                rank,
+                color
+            };
+        });
 
-        res.status(200).json({ rank, color });
+        // If only one handle and not array form, return single object for compatibility
+        if (handles.length === 1 && !Array.isArray(JSON.parse(handle.replace(/'/g, '"')))) {
+            return res.status(200).json(results[0]);
+        }
+
+        return res.status(200).json(results);
+
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch user data" });
+        return res.status(500).json({ error: "Failed to fetch user data" });
     }
 }
