@@ -1,0 +1,172 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f2f2f2;
+  padding: 40px;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.input-container {
+  max-width: 600px;
+  margin: 0 auto 20px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.input-field {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.friends-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  text-align: left;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+tr:hover {
+  background-color: #f8f9fa;
+}
+
+td a {
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+td a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  display: none;
+  color: #d32f2f;
+  font-size: 14px;
+  margin-top: 10px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+/* Loading styles */
+.loading {
+  display: none;
+  text-align: center;
+  padding: 20px;
+  color: #333;
+  font-size: 16px;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Rank colors */
+.rank-color-unrated { color: #000000; }
+.rank-color-newbie { color: #999999; }
+.rank-color-pupil { color: #16b316; }
+.rank-color-specialist { color: #1a98a6; }
+.rank-color-expert { color: #0000ff; }
+.rank-color-candidate-master { color: #b925b9; }
+.rank-color-master { color: #ffab03; }
+.rank-color-international-master { color: #ff9900; }
+.rank-color-grandmaster { color: #ff0000; }
+.rank-color-international-grandmaster { color: #ff0000; }
+.rank-color-legendary-grandmaster {
+  color: #ff0000;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  body {
+    padding: 20px;
+  }
+
+  .input-container {
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  .input-field {
+    width: 100%;
+  }
+
+  .friends-container {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: 8px;
+  }
+
+  .loading {
+    font-size: 14px;
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+  }
+}
