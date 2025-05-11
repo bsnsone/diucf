@@ -218,13 +218,27 @@ async function renderHandleList() {
         return;
     }
 
-    handles.forEach((handle, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `<td>${index + 1}</td><td>${handle}</td>`;
-        tableBody.appendChild(row);
-    });
-}
+    for (let index = 0; index < handles.length; index++) {
+        const handle = handles[index];
 
+        // Fetch rank color from your API
+        let color = "#999999"; // default
+        try {
+            const res = await fetch(`/getRating?handle=${handle}`);
+            const data = await res.json();
+            if (data.color) color = data.color;
+        } catch (err) {
+            console.error(`Failed to fetch rating for ${handle}`);
+        }
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td style="color: ${color}; font-weight: bold;">${handle}</td>
+        `;
+        tableBody.appendChild(row);
+    }
+}
 
 window.onload = () => {
     populateContestList();
